@@ -43,12 +43,13 @@ public class DashMovement : MonoBehaviour
     //Probably gonna refactor this into a different class
     private void BeginDash()
     {
+        this.rig.velocity = Vector2.zero;
         this.IsDashing = true;
         this.startingPosition = this.rig.position;
         this.floatAnimatorController.StopAnimation();
     }
 
-    private void StopDash()
+    public void StopDash()
     {
         this.IsDashing = false;
         this.rig.velocity = Vector2.zero;
@@ -64,12 +65,13 @@ public class DashMovement : MonoBehaviour
         //Move towards that
         this.rig.velocity = movingVelocity;
         //Either count the time or the distance
-        this.floatAnimatorController.StartAnimation();
         Vector2 targetPos = this.startingPosition + (this.currMouseDirection * this.maxDashDistance);
+        //Rotate the player's head towards the target
+
         float disSqr = SpartanMath.DistanceSqr(this.rig.position, targetPos);
+
         if (disSqr <= startAnimThreshold && !this.floatAnimatorController.IsRunning)
         {
-            Debug.Log("Early anim");
             this.floatAnimatorController.StartAnimation();
         }
         if (disSqr <= stopDashThreshold)
