@@ -2,12 +2,17 @@ using Auxiliars;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour, IDamageable {
 
-    private const float RESTORE_COLOR_TIME_MS = 200;
-    private const float ON_DAMAGE_KNOCK_BACK_STRENGTH = 10f; 
+    public delegate bool OnPlayerDamagedDidParry(int damage, Vector2 sourcePosition);
+
+    private const float RESTORE_COLOR_TIME_MS = 150f;
+    private const float ON_DAMAGE_KNOCK_BACK_STRENGTH = 12f;
     public int Health => health;
+    public OnPlayerDamagedDidParry OnDamageParryCheckCallback { get; set; }
+
 
     [SerializeField]
     private int health;
@@ -40,7 +45,16 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 
     public void Damage(int value, Vector2 damageSourcePosition)
     {
+        //We want to call the event right after we've been hit, but before we are damaged to be able to parry
+        bool didParry = this.OnDamageParryCheckCallback(value, damageSourcePosition);
+        if (didParry)
+        {
+            Debug.Log("Parry!");
+            return;
+        }
+
         this.health -= value;
+        
         if (this.health <= 0)
         {
             this.Die();

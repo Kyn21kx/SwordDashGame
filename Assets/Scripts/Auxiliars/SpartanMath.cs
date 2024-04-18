@@ -147,6 +147,19 @@ namespace Auxiliars {
 			return (mask & 1 << value) == 1 << value;
 		}
 
+        public static Quaternion LookTowardsDirection(Vector3 forward, Vector3 direction, float offsetAngle = 90f)
+        {
+            float alpha = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - offsetAngle;
+            Quaternion result = Quaternion.AngleAxis(alpha, forward);
+            return result;
+        }
+
+        public static float RandSign()
+        {
+            int rand = UnityEngine.Random.Range(0, 2);
+            return rand == 0 ? -1f : 1f;
+        }
+
         /// <summary>
         /// Code coming from https://stackoverflow.com/a/8659483/9854946
         /// </summary>

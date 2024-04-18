@@ -1,14 +1,11 @@
+using Auxiliars;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-//TODO: Refactor most of this to the behaviour, and leave it just being public functions to interact with combat
+[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyCombat : MonoBehaviour, IDamageable
 {
-    [SerializeField]
-    private EnemyTypes type;
-
     [SerializeField]
     private int health;
 
@@ -25,24 +22,26 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         this.rig = GetComponent<Rigidbody2D>();
     }
 
-    //For the enemy combat, determine the damageable actions on the type
-    private void FixedUpdate()
+    public void PlayAttackAnimation()
     {
-        switch (type)
-        {
-            case EnemyTypes.Normal:
-                this.FollowPlayer(Time.fixedDeltaTime);
-                break;
-            case EnemyTypes.Spiked:
-                break;
-            default:
-                throw new System.NotImplementedException($"Type {type} not implemented yet!");
-        }
+        //Here we call the animation itself, and at the end of the last frame, have a call to Attack()
+
     }
 
+    public void Attack()
+    {
+        //Increase the scale of the object and do a sphere cast or something
+        playerHealthRef.Damage(1, this.transform.position);
+    }
+
+    public bool IsPlayerInRange(float detectionRange)
+    {
+        //Do a distance check and see if the player is within a range
+        return SpartanMath.ArrivedAt(this.transform.position, EntityFetcher.Instance.Player.transform.position, detectionRange);
+    }
 
     //Follow the player, with maybe a bit of noise, slowly
-    private void FollowPlayer(float timeStep)
+    public void FollowPlayer(float timeStep)
     {
         Transform playerTransform = EntityFetcher.Instance.Player.transform;
         //Get the position and slowly follow the player

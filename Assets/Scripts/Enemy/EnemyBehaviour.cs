@@ -8,6 +8,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 
     [SerializeField]
     private float detectRange;
+    [SerializeField]
+    private EnemyTypes type;
+
     private PlayerHealth playerHealthReference;
     //Implement the damageable interface through this field
     private EnemyCombat enemyCombat;
@@ -20,25 +23,24 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         this.enemyCombat = GetComponent<EnemyCombat>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         //Detect the player
-        if (IsPlayerWithinRange(this.detectRange))
+        if (this.enemyCombat.IsPlayerInRange(this.detectRange))
         {
-            this.Attack();
+            this.enemyCombat.Attack();
             this.Die();
         }
-    }
-
-    private void Attack()
-    {
-        //Increase the scale of the object and do a sphere cast or something
-        playerHealthReference.Damage(1, this.transform.position);
-    }
-
-    private bool IsPlayerWithinRange(float threshold)
-    {
-        return SpartanMath.ArrivedAt(this.transform.position, EntityFetcher.Instance.Player.transform.position, threshold);
+        switch (type)
+        {
+            case EnemyTypes.Normal:
+                this.enemyCombat.FollowPlayer(Time.fixedDeltaTime);
+                break;
+            case EnemyTypes.Spiked:
+                break;
+            default:
+                throw new System.NotImplementedException($"Type {type} not implemented yet!");
+        }
     }
 
     private void OnDrawGizmos()

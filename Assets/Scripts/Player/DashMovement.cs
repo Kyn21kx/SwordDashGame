@@ -1,4 +1,5 @@
 using Auxiliars;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,14 +18,19 @@ public class DashMovement : MonoBehaviour
     [SerializeField]
     private FloatingAnimator floatAnimatorController;
 
+    [SerializeField]
+    private Animator burstAnimation;
+
     private Vector2 currMouseDirection;
     private Vector2 startingPosition;
     private Rigidbody2D rig;
     public bool IsDashing { get; private set; }
+    public bool IsAiming { get; private set; }
 
     private void Start()
     {
         this.IsDashing = false;
+        this.IsAiming = false;
         this.currMouseDirection = Vector2.zero;
         this.rig = GetComponent<Rigidbody2D>();
     }
@@ -32,6 +38,21 @@ public class DashMovement : MonoBehaviour
     private void Update()
     {
         this.HandleInput();
+        if (this.IsAiming)
+        {
+            this.Aim();
+        }
+    }
+
+    private void Aim()
+    {
+        //Mouse look input to aim
+        Camera mainCamRef = EntityFetcher.Instance.MainCamera;
+        Vector2 mouseWorldPos = mainCamRef.ScreenToWorldPoint(Input.mousePosition);
+        //Dest - Source
+        this.currMouseDirection = (mouseWorldPos - (Vector2)this.transform.position).normalized;
+        Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, this.currMouseDirection);
+        this.transform.rotation = targetRotation;
     }
 
     private void FixedUpdate()
@@ -43,9 +64,14 @@ public class DashMovement : MonoBehaviour
     //Probably gonna refactor this into a different class
     private void BeginDash()
     {
+        this.IsAiming = false;
         this.rig.velocity = Vector2.zero;
         this.IsDashing = true;
         this.startingPosition = this.rig.position;
+        //Instantiate the burst animation and rotate it towards the target direction
+        Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, this.currMouseDirection);
+        Instantiate(this.burstAnimation.gameObject, this.startingPosition, targetRotation);
+        this.transform.rotation = targetRotation;
         this.floatAnimatorController.StopAnimation();
     }
 
@@ -83,14 +109,13 @@ public class DashMovement : MonoBehaviour
     private void HandleInput()
     {
         if (this.IsDashing) return;
-        //Mouse look input to aim
-        Camera mainCamRef = EntityFetcher.Instance.MainCamera;
-        Vector2 mouseWorldPos = mainCamRef.ScreenToWorldPoint(Input.mousePosition);
-        //Dest - Source
-        this.currMouseDirection = (mouseWorldPos - (Vector2)this.transform.position).normalized;
-
-        //If the user clicks, go towards that direction, and disable the floating animation
+        //Make the user be able to aim with just a press of the mouse, shoot in release
         if (Input.GetMouseButtonDown(LEFT_MOUSE_BUTTON_INDEX))
+        {
+            this.IsAiming = true;
+        }
+        //If the user clicks, go towards that direction, and disable the floating animation
+        if (this.IsAiming && Input.GetMouseButtonUp(LEFT_MOUSE_BUTTON_INDEX))
         {
             //Launch the sword towards the direction
             this.BeginDash();
