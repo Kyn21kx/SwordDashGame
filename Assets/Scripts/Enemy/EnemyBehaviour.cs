@@ -15,7 +15,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
     //Implement the damageable interface through this field
     private EnemyCombat enemyCombat;
 
-    public int Health => ((IDamageable)enemyCombat).Health;
+    public int Health => enemyCombat.Health;
 
     private void Start()
     {
@@ -23,7 +23,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         this.enemyCombat = GetComponent<EnemyCombat>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         //Detect the player
         if (this.enemyCombat.IsPlayerInRange(this.detectRange))
@@ -31,6 +31,11 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
             this.enemyCombat.Attack();
             this.Die();
         }
+    }
+
+    private void FixedUpdate()
+    {
+        /*
         switch (type)
         {
             case EnemyTypes.Normal:
@@ -41,6 +46,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
             default:
                 throw new System.NotImplementedException($"Type {type} not implemented yet!");
         }
+        */
     }
 
     private void OnDrawGizmos()

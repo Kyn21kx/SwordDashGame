@@ -80,6 +80,7 @@ public class DashMovement : MonoBehaviour
         this.IsDashing = false;
         this.rig.velocity = Vector2.zero;
         this.currMouseDirection = Vector2.zero;
+        this.floatAnimatorController.StartAnimation();
     }
 
     private void DashTowards()
@@ -96,10 +97,6 @@ public class DashMovement : MonoBehaviour
 
         float disSqr = SpartanMath.DistanceSqr(this.rig.position, targetPos);
 
-        if (disSqr <= startAnimThreshold && !this.floatAnimatorController.IsRunning)
-        {
-            this.floatAnimatorController.StartAnimation();
-        }
         if (disSqr <= stopDashThreshold)
         {
             this.StopDash();
