@@ -65,6 +65,7 @@ public class PathGraph : MonoBehaviour
     {
         for (int i = 0; i < positions.Length; i++)
         {
+            if (positions[i] == null) continue;
             Destroy(this.positions[i].gameObject);
         }
     }

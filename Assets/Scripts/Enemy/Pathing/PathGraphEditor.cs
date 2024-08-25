@@ -19,7 +19,7 @@ public class PathGraphEditor : Editor
                 path.positions[i].position = Handles.PositionHandle(path.positions[i].position, Quaternion.identity);
                 continue;
             } 
-            Transform newPoint = new GameObject($"{path.Target.name}'s position #{i + 1}").transform;
+            Transform newPoint = new GameObject($"{path.Target  .name}'s position #{i + 1}").transform;
             newPoint.parent = path.Target;
             path.positions[i] = newPoint;
         }

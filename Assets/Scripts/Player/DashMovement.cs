@@ -23,13 +23,23 @@ public class DashMovement : MonoBehaviour
 
     private Vector2 currMouseDirection;
     private Vector2 startingPosition;
+
+    private Vector2 dashingDirection;
+    private float currentMaxDashingDistance;
+    
     private Rigidbody2D rig;
-    public bool IsDashing { get; private set; }
+    public bool IsDashing => this.isDashing;
+
+    [SerializeField]
+    private bool isDashing;
     public bool IsAiming { get; private set; }
+
+    //It is more reliable to use timers here tbh
+    private SpartanTimer dashingTimer;
 
     private void Start()
     {
-        this.IsDashing = false;
+        this.isDashing = false;
         this.IsAiming = false;
         this.currMouseDirection = Vector2.zero;
         this.rig = GetComponent<Rigidbody2D>();
@@ -57,47 +67,53 @@ public class DashMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!this.IsDashing) return;
+        if (!this.isDashing) return;
         this.DashTowards();
     }
 
     //Probably gonna refactor this into a different class
-    private void BeginDash()
+    public void BeginDash(Vector2 targetDirection, float travelAmount)
     {
         this.IsAiming = false;
         this.rig.velocity = Vector2.zero;
-        this.IsDashing = true;
+        this.isDashing = true;
         this.startingPosition = this.rig.position;
+        this.currentMaxDashingDistance = travelAmount;
+        this.dashingDirection = targetDirection;
         //Instantiate the burst animation and rotate it towards the target direction
-        Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, this.currMouseDirection);
+        Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, targetDirection);
         Instantiate(this.burstAnimation.gameObject, this.startingPosition, targetRotation);
         this.transform.rotation = targetRotation;
+        this.dashingTimer.Reset();
         this.floatAnimatorController.StopAnimation();
     }
 
     public void StopDash()
     {
-        this.IsDashing = false;
+        this.isDashing = false;
         this.rig.velocity = Vector2.zero;
+        this.dashingDirection = Vector2.zero;
         this.currMouseDirection = Vector2.zero;
+        this.dashingTimer.Stop();
         this.floatAnimatorController.StartAnimation();
     }
 
     private void DashTowards()
     {
-        const float startAnimThreshold = 3f * 3f;
-        const float stopDashThreshold = 0.2f * 0.2f;
         //Get the velocity
-        Vector2 movingVelocity = this.currMouseDirection * dashSpeed;
+        Vector2 movingVelocity = this.dashingDirection * dashSpeed;
         //Move towards that
         this.rig.velocity = movingVelocity;
         //Either count the time or the distance
-        Vector2 targetPos = this.startingPosition + (this.currMouseDirection * this.maxDashDistance);
+        Vector2 targetPos = this.startingPosition + (this.dashingDirection * this.currentMaxDashingDistance);
         //Rotate the player's head towards the target
 
-        float disSqr = SpartanMath.DistanceSqr(this.rig.position, targetPos);
-
-        if (disSqr <= stopDashThreshold)
+        float dis = Vector3.Distance(this.startingPosition, targetPos);
+        //t = d / V
+        float timeToStop = dis / this.rig.velocity.magnitude;
+        float elapsed = this.dashingTimer.CurrentTimeSeconds;
+        
+        if (elapsed >= timeToStop)
         {
             this.StopDash();
         }
@@ -105,7 +121,7 @@ public class DashMovement : MonoBehaviour
 
     private void HandleInput()
     {
-        if (this.IsDashing) return;
+        if (this.isDashing) return;
         //Make the user be able to aim with just a press of the mouse, shoot in release
         if (Input.GetMouseButtonDown(LEFT_MOUSE_BUTTON_INDEX))
         {
@@ -115,13 +131,13 @@ public class DashMovement : MonoBehaviour
         if (this.IsAiming && Input.GetMouseButtonUp(LEFT_MOUSE_BUTTON_INDEX))
         {
             //Launch the sword towards the direction
-            this.BeginDash();
+            this.BeginDash(this.currMouseDirection, this.maxDashDistance);
         }
     }
 
     private void OnDrawGizmos()
     {
-        if (this.currMouseDirection == Vector2.zero || this.IsDashing) return;
+        if (this.currMouseDirection == Vector2.zero || this.isDashing) return;
         Gizmos.color = Color.red;
         Gizmos.DrawLine(this.rig.position, this.rig.position + (this.currMouseDirection * maxDashDistance));
     }
