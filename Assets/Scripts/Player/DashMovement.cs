@@ -1,7 +1,4 @@
 using Auxiliars;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -23,6 +20,8 @@ public class DashMovement : MonoBehaviour
 
     private Vector2 currMouseDirection;
     private Vector2 startingPosition;
+
+    public Vector2 DashingDirection => this.dashingDirection;
 
     private Vector2 dashingDirection;
     private float currentMaxDashingDistance;

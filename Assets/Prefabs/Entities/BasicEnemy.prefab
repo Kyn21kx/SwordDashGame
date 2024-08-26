@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 2616149035942883073}
   - component: {fileID: -692829918731192654}
   - component: {fileID: 3130643075881996217}
+  - component: {fileID: 3902190176765586495}
+  - component: {fileID: 4652047890571437945}
   m_Layer: 0
   m_Name: BasicEnemy
   m_TagString: Enemy
@@ -110,7 +112,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &2616149035942883326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +174,34 @@ MonoBehaviour:
   idleMovementSpeed: 0
   aggressiveMovementSpeed: 0
   defensiveMovementSpeed: 0
+--- !u!114 &3902190176765586495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616149035942883322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518a189647e8eb04d843784a7b1027df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &4652047890571437945
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616149035942883322}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &5291402752259510151
 GameObject:
   m_ObjectHideFlags: 0
