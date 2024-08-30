@@ -1,4 +1,5 @@
 using Auxiliars;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -13,11 +14,13 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     public int Health => health;
     private IDamageable playerHealthRef;
+	private EnemyMovement movRef;
 
-    private void Start()
+	private void Start()
     {
         this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
         this.rig = GetComponent<Rigidbody2D>();
+        this.movRef = GetComponent<EnemyMovement>();
     }
 
     public void PlayAttackAnimation()
@@ -62,4 +65,15 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     {
         Destroy(this.gameObject);
     }
+
+	public void KnockbackForSeconds(Vector2 force, float seconds) {
+		this.movRef.Stop();
+		this.movRef.Rig.AddForce(force, ForceMode2D.Impulse);
+		StartCoroutine(this.ResetVelocityAfter(seconds));
+	}
+
+	private IEnumerator ResetVelocityAfter(float seconds) {
+		yield return new WaitForSeconds(seconds);
+		this.movRef.Stop();
+	}
 }

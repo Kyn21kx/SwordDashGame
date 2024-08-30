@@ -14,24 +14,56 @@ public class PlayerCombat : MonoBehaviour {
 	[SerializeField]
 	private float maximumRadius;
 
+	[SerializeField]
+	private float sweepForce;
+	
+	[SerializeField]
+	private LayerMask bombAffectedLayer;
+
 	private float currentAttackRadius;
+
+	private Rigidbody2D rig;
+
+	private void Start() {
+		this.rig = GetComponent<Rigidbody2D>();
+	}
 
 	private void Update() {
 		this.HandleInput();
-		if (this.heldAttackTimer.Started) {
-			float percentageAmount = Mathf.Clamp01(this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold);
-			Debug.Log($"Amount held: {percentageAmount}");
-			this.currentAttackRadius = this.maximumRadius * percentageAmount;
-			if (this.heldAttackTimer.CurrentTimeSeconds >= this.releaseThreshold) {
-				this.SweepAttack(percentageAmount);
-			}
+		if (!this.heldAttackTimer.Started) return;
+		float percentageAmount = Mathf.Clamp01(this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold);
+		this.currentAttackRadius = this.maximumRadius * percentageAmount;
+		if (this.heldAttackTimer.CurrentTimeSeconds >= this.releaseThreshold) {
+			this.SweepAttack(this.currentAttackRadius);
 		}
 	}
 
-	private void SweepAttack(float percentageAmount) {
+	private void SweepAttack(float radius) {
 		//Get a percentage of the radius to attack in
-		
-		this.heldAttackTimer.Stop();
+		//Sphere override collider
+		this.StopHolding();
+
+		//TODO: Rotate the sword around
+
+		RaycastHit2D[] enemiesToHit = Physics2D.CircleCastAll(this.transform.position, radius, Vector2.zero, 0f, bombAffectedLayer);
+		Debug.Log($"Enemies found: {enemiesToHit.Length}");
+		for (int i = 0; i < enemiesToHit.Length; i++)
+		{
+			Transform enemyTransform = enemiesToHit[i].transform;
+			var enemyDmg = enemyTransform.GetComponent<IDamageable>();
+			Vector2 distanceVector = (enemyTransform.position - this.transform.position);
+			Vector2 direction = distanceVector.normalized;
+			//Knockback should be just outside the radius
+			//Get the furthest point on the radius
+			//The radius is the distance between the player and the desired point
+			//We can then take the distance betwen the enemy and the player and substract that, use it as a magnitude
+			float distanceToBeOutside = (radius - distanceVector.magnitude) * 1.2f; //A little offset to not be so precise
+			//t = d / V
+			float time = distanceToBeOutside / this.sweepForce;
+			if (time < 0) continue;
+			Debug.Log($"Time to stop pushback: {time}");
+			enemyDmg.KnockbackForSeconds(direction * this.sweepForce, time);
+		}
 	}
 
 	private void HandleInput() {
@@ -39,9 +71,16 @@ public class PlayerCombat : MonoBehaviour {
 			this.heldAttackTimer.Reset();
 		}
 		if (Input.GetKeyUp(KeyCode.Space)) {
-			this.heldAttackTimer.Stop();
-			this.currentAttackRadius = 0f;
+			if (this.currentAttackRadius > 0f) {
+				this.SweepAttack(this.currentAttackRadius);
+			}
+			this.StopHolding();
 		}
+	}
+
+	private void StopHolding() {
+		this.heldAttackTimer.Stop();
+		this.currentAttackRadius = 0f;
 	}
 
 	private void OnDrawGizmos() {

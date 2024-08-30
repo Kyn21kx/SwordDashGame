@@ -6,6 +6,8 @@ public class EnemyMovement : MonoBehaviour {
 
     public float Speed => this.speed;
 
+    public Rigidbody2D Rig => this.rig;
+
     [SerializeField]
     private LayerMask collisionLayer;
 

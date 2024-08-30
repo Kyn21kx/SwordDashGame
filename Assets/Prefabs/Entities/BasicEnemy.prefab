@@ -13,11 +13,11 @@ GameObject:
   - component: {fileID: 2616149035942883074}
   - component: {fileID: 2616149035942883326}
   - component: {fileID: 2616149035942883073}
-  - component: {fileID: -692829918731192654}
   - component: {fileID: 3130643075881996217}
   - component: {fileID: 3902190176765586495}
   - component: {fileID: 4652047890571437945}
-  m_Layer: 0
+  - component: {fileID: 5486169185772031158}
+  m_Layer: 6
   m_Name: BasicEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -141,20 +141,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 1
   movementSpeed: 10
---- !u!114 &-692829918731192654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2616149035942883322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 426cf301980bd924390970ef9f620ca0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 7
-  maxHeight: 0.5
 --- !u!114 &3130643075881996217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +188,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &5486169185772031158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616149035942883322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3077cb043a2b54a948b150668056db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  speed: 2
+  desiredDirectionColor: {r: 0.36611605, g: 0, b: 1, a: 1}
+  otherDirectionsColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &5291402752259510151
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7915277211234910704}
   - component: {fileID: 8431291068379791454}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Shadow01
   m_TagString: Untagged
   m_Icon: {fileID: 0}

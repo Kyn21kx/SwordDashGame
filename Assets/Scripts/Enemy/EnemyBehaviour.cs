@@ -64,4 +64,8 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
     {
         ((IDamageable)enemyCombat).Die();
     }
+
+	public void KnockbackForSeconds(Vector2 force, float seconds) {
+		((IDamageable)enemyCombat).KnockbackForSeconds(force, seconds);
+	}
 }

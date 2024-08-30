@@ -89,4 +89,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
         this.spriteBackToNormalTimer.Reset();
     }
 
+	public void KnockbackForSeconds(Vector2 force, float seconds) {
+		throw new System.NotImplementedException();
+	}
 }

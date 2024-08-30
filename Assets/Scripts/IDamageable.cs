@@ -9,4 +9,6 @@ public interface IDamageable
     void Damage(int value, Vector2 damageSourcePosition);
 
     void Die();
+
+    void KnockbackForSeconds(Vector2 force, float seconds);
 }

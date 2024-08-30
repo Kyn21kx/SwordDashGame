@@ -1670,6 +1670,10 @@ MonoBehaviour:
   releaseThreshold: 1.5
   attackRadiusColor: {r: 0.9622642, g: 0, b: 0.83886606, a: 1}
   maximumRadius: 7
+  sweepForce: 30
+  bombAffectedLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1616273402
 GameObject:
   m_ObjectHideFlags: 0
@@ -2108,7 +2112,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2274951121469695343, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
       propertyPath: impactFrameTime
-      value: 0.05
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2274951121469695343, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
       propertyPath: parryPopupPrefab
@@ -2174,6 +2178,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1122684185, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}

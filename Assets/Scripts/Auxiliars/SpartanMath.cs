@@ -115,11 +115,14 @@ namespace Auxiliars {
 		}
 
 		public static Vector2 ReflectionVector(Vector2 incoming, Vector2 normal) {
-			//2(n . v)n + v
+			//To get a reflection vector we follow: 2(n . v)n + v
+			//Where v: The incoming velocity / direction vector
+			//And n: The normal surface vector of the collider we hit
 			float dotV = Vector2.Dot(normal, incoming);
 			Vector2 tmp = (-2f * dotV) * normal;
 			return tmp + incoming;
 		}
+
 		public static float InverseLerp(float from, float to, float t) {
 			Clamp(ref t, 0f, 1f);
 			return (t - from) / to - from;
