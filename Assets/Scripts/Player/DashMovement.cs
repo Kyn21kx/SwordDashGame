@@ -4,8 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class DashMovement : MonoBehaviour
 {
-    const int LEFT_MOUSE_BUTTON_INDEX = 0;
-
+    private const int LEFT_MOUSE_BUTTON_INDEX = 0;
+    //Limit in case the timer goes off to infinity
+    private const float MAX_TIME_FOR_DASHING = 1f;
     [SerializeField]
     private float dashSpeed;
 
@@ -110,6 +111,9 @@ public class DashMovement : MonoBehaviour
         float dis = Vector3.Distance(this.startingPosition, targetPos);
         //t = d / V
         float timeToStop = dis / this.rig.velocity.magnitude;
+        if (float.IsNaN(timeToStop)) {
+            timeToStop = 0f;
+        }
         float elapsed = this.dashingTimer.CurrentTimeSeconds;
         
         if (elapsed >= timeToStop)
@@ -138,7 +142,8 @@ public class DashMovement : MonoBehaviour
     {
         if (this.currMouseDirection == Vector2.zero || this.isDashing) return;
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(this.rig.position, this.rig.position + (this.currMouseDirection * maxDashDistance));
+        Vector2 dashEndDir = (this.currMouseDirection * maxDashDistance);
+		Gizmos.DrawLine(this.rig.position, this.rig.position + dashEndDir);
     }
 
 }

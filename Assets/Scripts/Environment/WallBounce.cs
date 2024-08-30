@@ -18,6 +18,7 @@ public class WallBounce : MonoBehaviour
         //Bounce them off
         var bounceable = collision.gameObject.GetComponent<IBounceable>();
         Assert.IsNotNull(bounceable, $"Bounce off target {collision.transform.name} should have an attached IBounceable component!");
-        bounceable.BounceOff(collision.contacts[0].point, BOUNCE_OFF_FORCE);
+        if (!bounceable.CanBounce()) return;
+        bounceable.BounceOff(collision.contacts[0].normal, BOUNCE_OFF_FORCE);
     }
 }

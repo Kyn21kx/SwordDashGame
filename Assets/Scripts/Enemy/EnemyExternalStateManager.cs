@@ -24,8 +24,14 @@ public class EnemyExternalStateManager : MonoBehaviour, IBounceable {
     public void BounceOff(Vector2 source, float amount)
     {
         Vector2 force = ((Vector2)this.transform.position - source).normalized * amount;
-        this.animator.StopAnimation();
+        if (this.animator != null) {
+            this.animator.StopAnimation();
+        }
         this.rig.AddForce(force, ForceMode2D.Impulse);
         this.restoreAnimTimer.Reset();
     }
+
+	public bool CanBounce() {
+        return true;
+	}
 }

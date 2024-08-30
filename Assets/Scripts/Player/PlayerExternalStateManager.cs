@@ -1,3 +1,4 @@
+using Auxiliars;
 using UnityEngine;
 
 class PlayerExternalStateManager : MonoBehaviour, IBounceable {
@@ -15,7 +16,12 @@ class PlayerExternalStateManager : MonoBehaviour, IBounceable {
     public void BounceOff(Vector2 source, float amount)
     {
         //The player's bounce off behaviour will be to continue the dash but in the direction of the bounce
-        Vector2 direction = ((Vector2)this.transform.position - source).normalized;
-        this.dashMovementRef.BeginDash(direction, amount);
+        Vector2 direction = SpartanMath.ReflectionVector(this.dashMovementRef.DashingDirection, source).normalized;
+        Debug.DrawLine(this.transform.position, (Vector2)this.transform.position + direction, Color.red);
+		this.dashMovementRef.BeginDash(direction, amount);
     }
+
+	public bool CanBounce() {
+        return this.rig.velocity.magnitude > 0f;
+	}
 }

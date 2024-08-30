@@ -16,6 +16,9 @@ public class Parry : MonoBehaviour
     [SerializeField]
     private TextPopup parryPopupPrefab;
 
+    [SerializeField]
+    private float impactFrameTime;
+
     private PlayerHealth healthController;
     private SpartanTimer parryTimer;
 
@@ -53,6 +56,7 @@ public class Parry : MonoBehaviour
         this.parryTimer.Stop();
         if (elapsedMillis <= this.parryThresholdMillis)
         {
+            TimeController.StopTimeFor(this.impactFrameTime);
             TextPopup instance = Instantiate(this.parryPopupPrefab, this.transform.position, Quaternion.identity);
             instance.PopupText = PARRY_TEXT;
             instance.StartAnimation();
