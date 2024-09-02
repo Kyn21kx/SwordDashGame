@@ -34,7 +34,13 @@ public class EnemyMovement : MonoBehaviour {
         this.rig = GetComponent<Rigidbody2D>();
     }
 
-    public void MoveTo(Vector2 direction, float speed, float timestep = 1f)
+	private void FixedUpdate() {
+		if (Mathf.Approximately(this.rig.velocity.magnitude, 0f)) {
+            this.rig.drag = 0.05f;
+        }
+	}
+
+	public void MoveTo(Vector2 direction, float speed, float timestep = 1f)
     {
         Assert.IsTrue(
             Mathf.Approximately(direction.magnitude, 1f),
@@ -51,7 +57,11 @@ public class EnemyMovement : MonoBehaviour {
         this.rig.velocity = this.desiredDirection;
     }
 
-    private void OnDrawGizmos()
+	public void StopWithFriction() {
+        this.rig.drag = 5f; //Some arbitrary drag coeficient
+	}
+
+	private void OnDrawGizmos()
     {
         Gizmos.color = this.desiredDirectionColor;
         const float visibleMultiplier = 2f;

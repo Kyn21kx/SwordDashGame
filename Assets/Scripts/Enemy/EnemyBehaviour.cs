@@ -17,7 +17,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 
     public int Health => enemyCombat.Health;
 
-    private void Start()
+	public EnemyTypes Type => type;
+
+	private void Start()
     {
         this.playerHealthReference = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
         this.enemyCombat = GetComponent<EnemyCombat>();

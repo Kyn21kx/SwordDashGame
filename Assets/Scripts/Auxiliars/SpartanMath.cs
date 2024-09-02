@@ -6,6 +6,8 @@ using UnityEngine;
 namespace Auxiliars {
 	public static class SpartanMath {
 
+		public const float TAU = 6.2831855f;
+
 		public static void Clamp(ref float n, float min, float max) {
 			n = n > max ? max : n;
 			n = n < min ? min : n;
@@ -81,6 +83,16 @@ namespace Auxiliars {
 				LerpUnclamped(from.x, to.x, t),
 				LerpUnclamped(from.y, to.y, t),
 				LerpUnclamped(from.z, to.z, t)
+			);
+		}
+
+		public static Color Lerp(Color from, Color to, float t) {
+			Clamp(ref t, 0f, 1f);
+			return new Color(
+				LerpUnclamped(from.r, to.r, t),
+				LerpUnclamped(from.g, to.g, t),
+				LerpUnclamped(from.b, to.b, t),
+				LerpUnclamped(from.a, to.a, t)
 			);
 		}
 

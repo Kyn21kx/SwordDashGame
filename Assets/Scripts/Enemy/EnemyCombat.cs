@@ -1,6 +1,7 @@
 using Auxiliars;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyCombat : MonoBehaviour, IDamageable
@@ -10,17 +11,27 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     [SerializeField]
     private float movementSpeed; // Only applicable if the enemy is of type normal
+
+    [Header("Only applicable to Enemies with type \"Shooting\"")]
+    [SerializeField]
+    private Projectile projectilePrefab;
+    [SerializeField]
+    private float shootingSpeed;
+
     private Rigidbody2D rig;
 
     public int Health => health;
     private IDamageable playerHealthRef;
 	private EnemyMovement movRef;
 
+    private EnemyBehaviour behaviourRef;
+
 	private void Start()
     {
         this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
         this.rig = GetComponent<Rigidbody2D>();
         this.movRef = GetComponent<EnemyMovement>();
+        this.behaviourRef = GetComponent<EnemyBehaviour>();
     }
 
     public void PlayAttackAnimation()
@@ -31,8 +42,19 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     public void Attack()
     {
-        //Increase the scale of the object and do a sphere cast or something
-        playerHealthRef.Damage(1, this.transform.position);
+        switch (this.behaviourRef.Type)
+        {
+            case EnemyTypes.Normal:
+            case EnemyTypes.Spiked:
+                //Increase the scale of the object and do a sphere cast or something
+                playerHealthRef.Damage(1, this.transform.position);
+                break;
+            case EnemyTypes.Shooting:
+                Vector2 dir = (Vector2)EntityFetcher.Instance.Player.transform.position - this.rig.position;
+                dir.Normalize();
+                this.Shoot(dir, this.shootingSpeed);
+                break;
+        }
     }
 
     public bool IsPlayerInRange(float detectionRange)
@@ -50,6 +72,12 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         //Dest - source
         Vector2 direction = (playerPos - (Vector2)this.transform.position).normalized;
         this.rig.velocity = direction * movementSpeed * timeStep;
+    }
+
+    public void Shoot(Vector2 direction, float speed) {
+        Assert.IsTrue(this.behaviourRef.Type == EnemyTypes.Shooting, $"Enemy {transform.name} is not a shooting type, this may cause unexpected behaviour!");
+        Projectile projInstance = Instantiate(this.projectilePrefab, this.transform.position, Quaternion.identity);
+        projInstance.Initialize(direction, speed);
     }
 
     public void Damage(int value, Vector2 damageSourcePosition)
@@ -74,6 +102,6 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
 	private IEnumerator ResetVelocityAfter(float seconds) {
 		yield return new WaitForSeconds(seconds);
-		this.movRef.Stop();
+		this.movRef.StopWithFriction();
 	}
 }

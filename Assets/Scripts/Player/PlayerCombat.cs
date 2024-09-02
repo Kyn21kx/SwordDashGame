@@ -6,6 +6,13 @@ public class PlayerCombat : MonoBehaviour {
 	private SpartanTimer heldAttackTimer;
 
 	[SerializeField]
+	private float rotationAnimationSpeed;
+
+	private bool rotationStarted;
+	private float rotatingBlend; //Lol
+	private float initialAngle;
+
+	[SerializeField]
 	private float releaseThreshold;
 
 	[SerializeField]
@@ -26,10 +33,25 @@ public class PlayerCombat : MonoBehaviour {
 
 	private void Start() {
 		this.rig = GetComponent<Rigidbody2D>();
+		this.rotationStarted = false;
+		this.rotatingBlend = 0f;
 	}
 
 	private void Update() {
 		this.HandleInput();
+		this.HandleSweepAttackControl();
+		if (!this.rotationStarted) return;
+		this.rotatingBlend += Time.deltaTime * this.rotationAnimationSpeed;
+		if (rotatingBlend >= 1f) {
+			this.rotationStarted = false;
+			this.rotatingBlend = 0f;
+		}
+		Vector3 eulerRotation = this.transform.rotation.eulerAngles;
+		eulerRotation.z = this.initialAngle + (SpartanMath.TAU * Mathf.Rad2Deg *  this.rotatingBlend); //Unit circle is 1 Tau Radians
+		this.transform.rotation = Quaternion.Euler(eulerRotation);
+	}
+
+	private void HandleSweepAttackControl() {
 		if (!this.heldAttackTimer.Started) return;
 		float percentageAmount = Mathf.Clamp01(this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold);
 		this.currentAttackRadius = this.maximumRadius * percentageAmount;
@@ -43,7 +65,9 @@ public class PlayerCombat : MonoBehaviour {
 		//Sphere override collider
 		this.StopHolding();
 
-		//TODO: Rotate the sword around
+		//Trigger rotate the sword around
+		this.rotationStarted = true;
+		this.initialAngle = this.transform.rotation.eulerAngles.z;
 
 		RaycastHit2D[] enemiesToHit = Physics2D.CircleCastAll(this.transform.position, radius, Vector2.zero, 0f, bombAffectedLayer);
 		Debug.Log($"Enemies found: {enemiesToHit.Length}");
@@ -53,11 +77,13 @@ public class PlayerCombat : MonoBehaviour {
 			var enemyDmg = enemyTransform.GetComponent<IDamageable>();
 			Vector2 distanceVector = (enemyTransform.position - this.transform.position);
 			Vector2 direction = distanceVector.normalized;
+			/*
 			//Knockback should be just outside the radius
 			//Get the furthest point on the radius
 			//The radius is the distance between the player and the desired point
 			//We can then take the distance betwen the enemy and the player and substract that, use it as a magnitude
-			float distanceToBeOutside = (radius - distanceVector.magnitude) * 1.2f; //A little offset to not be so precise
+			*/
+			float distanceToBeOutside = (radius - distanceVector.magnitude);
 			//t = d / V
 			float time = distanceToBeOutside / this.sweepForce;
 			if (time < 0) continue;
