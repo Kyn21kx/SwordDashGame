@@ -37,12 +37,15 @@ public class DashMovement : MonoBehaviour
     //It is more reliable to use timers here tbh
     private SpartanTimer dashingTimer;
 
+    private float initialDrag;
+
     private void Start()
     {
         this.isDashing = false;
         this.IsAiming = false;
         this.currMouseDirection = Vector2.zero;
         this.rig = GetComponent<Rigidbody2D>();
+        this.initialDrag = this.rig.drag;
     }
 
     private void Update()
@@ -74,6 +77,7 @@ public class DashMovement : MonoBehaviour
     //Probably gonna refactor this into a different class
     public void BeginDash(Vector2 targetDirection, float travelAmount)
     {
+        this.rig.drag = 0f;
         this.IsAiming = false;
         this.rig.velocity = Vector2.zero;
         this.isDashing = true;
@@ -94,6 +98,7 @@ public class DashMovement : MonoBehaviour
         this.rig.velocity = Vector2.zero;
         this.dashingDirection = Vector2.zero;
         this.currMouseDirection = Vector2.zero;
+        this.rig.drag = this.initialDrag;
         this.dashingTimer.Stop();
         this.floatAnimatorController.StartAnimation();
     }

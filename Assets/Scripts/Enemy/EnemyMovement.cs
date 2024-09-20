@@ -58,7 +58,7 @@ public class EnemyMovement : MonoBehaviour {
     }
 
 	public void StopWithFriction() {
-        this.rig.drag = 5f; //Some arbitrary drag coeficient
+        this.rig.drag = 8f; //Some arbitrary drag coeficient
 	}
 
 	private void OnDrawGizmos()

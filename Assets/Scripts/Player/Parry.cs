@@ -36,7 +36,7 @@ public class Parry : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetMouseButtonDown(RIGHT_MOUSE_INDEX)) { 
+        if (Input.GetKeyDown(KeyCode.Space)) { 
             //Start counting the time
             this.parryTimer.Reset();
         }

@@ -9,16 +9,14 @@ public class EnemyExternalStateManager : MonoBehaviour, IBounceable {
 
     private SpartanTimer restoreAnimTimer;
 
+    private EnemyBehaviour behaviourRef;
+
     private void Start()
     {
         this.restoreAnimTimer = new SpartanTimer(TimeMode.Framed);
         this.rig = GetComponent<Rigidbody2D>();
         this.animator = GetComponent<FloatingAnimator>();
-    }
-
-    private void Update()
-    {
-        
+        this.behaviourRef = GetComponent<EnemyBehaviour>();
     }
 
     public void BounceOff(Vector2 source, float amount)
@@ -32,6 +30,6 @@ public class EnemyExternalStateManager : MonoBehaviour, IBounceable {
     }
 
 	public bool CanBounce() {
-        return true;
+        return this.behaviourRef.IsPlayerDetected;
 	}
 }

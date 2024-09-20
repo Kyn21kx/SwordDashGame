@@ -22,6 +22,7 @@ class PlayerExternalStateManager : MonoBehaviour, IBounceable {
     }
 
 	public bool CanBounce() {
+        //When dashing or getting knocked back
         return this.rig.velocity.magnitude > 0f;
 	}
 }

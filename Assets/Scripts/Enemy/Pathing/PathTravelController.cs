@@ -9,6 +9,9 @@ public class PathTravelController : MonoBehaviour
 	[SerializeField]
 	private EnemyMovement movementRef;
 
+	[SerializeField]
+	private EnemyBehaviour behaviourRef;
+
 	private PathGraph pathGraph;
 
 	private int currIndex;
@@ -16,11 +19,14 @@ public class PathTravelController : MonoBehaviour
 	private void Start()
 	{
 		Assert.IsNotNull(this.movementRef);
+		Assert.IsNotNull(this.behaviourRef);
 		this.pathGraph = GetComponent<PathGraph>();
 	}
 
     private void FixedUpdate()
     {
+		if (this.behaviourRef.IsPlayerDetected) return;
+
 		if (this.currIndex >= this.pathGraph.positions.Length) {
 			if (this.pathGraph.ShouldLoop)
 			{

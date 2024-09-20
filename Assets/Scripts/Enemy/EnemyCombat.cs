@@ -82,6 +82,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     public void Damage(int value, Vector2 damageSourcePosition)
     {
+        this.behaviourRef.IsPlayerDetected = true;
         this.health -= value;
         if (this.health <= 0)
         {
@@ -95,7 +96,8 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     }
 
 	public void KnockbackForSeconds(Vector2 force, float seconds) {
-		this.movRef.Stop();
+        this.behaviourRef.IsPlayerDetected = true;
+        this.movRef.Stop();
 		this.movRef.Rig.AddForce(force, ForceMode2D.Impulse);
 		StartCoroutine(this.ResetVelocityAfter(seconds));
 	}
