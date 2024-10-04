@@ -59,7 +59,7 @@ public class PlayerCombat : MonoBehaviour {
 	}
 
 	private void HandleSweepAttackControl() {
-		if (!this.heldAttackTimer.Started) return;
+		if (!this.heldAttackTimer.Started || this.rotationStarted) return;
 		float percentageAmount = Mathf.Clamp01(this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold);
 		this.currentAttackRadius = this.maximumRadius * percentageAmount;
 		if (this.heldAttackTimer.CurrentTimeSeconds >= this.releaseThreshold) {
