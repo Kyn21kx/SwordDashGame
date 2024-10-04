@@ -27,6 +27,9 @@ public class PlayerCombat : MonoBehaviour {
 	[SerializeField]
 	private LayerMask bombAffectedLayer;
 
+	[SerializeField]
+	private GameObject rotationSweepPrefab;
+
 	private float currentAttackRadius;
 
 	private Rigidbody2D rig;
@@ -41,13 +44,17 @@ public class PlayerCombat : MonoBehaviour {
 		this.HandleInput();
 		this.HandleSweepAttackControl();
 		if (!this.rotationStarted) return;
+		this.RotateFx();
+	}
+
+	private void RotateFx() {
 		this.rotatingBlend += Time.deltaTime * this.rotationAnimationSpeed;
 		if (rotatingBlend >= 1f) {
 			this.rotationStarted = false;
 			this.rotatingBlend = 0f;
 		}
 		Vector3 eulerRotation = this.transform.rotation.eulerAngles;
-		eulerRotation.z = this.initialAngle + (SpartanMath.TAU * Mathf.Rad2Deg *  this.rotatingBlend); //Unit circle is 1 Tau Radians
+		eulerRotation.z = this.initialAngle - (SpartanMath.TAU * Mathf.Rad2Deg * this.rotatingBlend); //Unit circle is 1 Tau Radians
 		this.transform.rotation = Quaternion.Euler(eulerRotation);
 	}
 
@@ -60,14 +67,19 @@ public class PlayerCombat : MonoBehaviour {
 		}
 	}
 
+	private void PrepareRotationFx() {
+		//Spawn in the rotating prefab anim
+		this.rotationStarted = true;
+		this.initialAngle = this.transform.rotation.eulerAngles.z;
+		TimedObject.InstantiateTimed(this.rotationSweepPrefab, 1f, this.transform);
+	}
+
 	private void SweepAttack(float radius) {
 		//Get a percentage of the radius to attack in
 		//Sphere override collider
 		this.StopHolding();
-
 		//Trigger rotate the sword around
-		this.rotationStarted = true;
-		this.initialAngle = this.transform.rotation.eulerAngles.z;
+		this.PrepareRotationFx();
 
 		RaycastHit2D[] enemiesToHit = Physics2D.CircleCastAll(this.transform.position, radius, Vector2.zero, 0f, bombAffectedLayer);
 		Debug.Log($"Enemies found: {enemiesToHit.Length}");
