@@ -9,7 +9,6 @@ public class PlayerCombat : MonoBehaviour {
 	private float rotationAnimationSpeed;
 
 	private bool rotationStarted;
-	private float rotatingBlend; //Lol
 	private float initialAngle;
 
 	[SerializeField]
@@ -22,8 +21,11 @@ public class PlayerCombat : MonoBehaviour {
 	private float maximumRadius;
 
 	[SerializeField]
+	private float minimumRadius;
+
+	[SerializeField]
 	private float sweepForce;
-	
+
 	[SerializeField]
 	private LayerMask bombAffectedLayer;
 
@@ -34,44 +36,43 @@ public class PlayerCombat : MonoBehaviour {
 
 	private Rigidbody2D rig;
 
+	private Animator animatorController;
+
 	private void Start() {
 		this.rig = GetComponent<Rigidbody2D>();
+		this.animatorController = GetComponent<Animator>();
 		this.rotationStarted = false;
-		this.rotatingBlend = 0f;
 	}
 
 	private void Update() {
 		this.HandleInput();
 		this.HandleSweepAttackControl();
-		if (!this.rotationStarted) return;
-		this.RotateFx();
-	}
-
-	private void RotateFx() {
-		this.rotatingBlend += Time.deltaTime * this.rotationAnimationSpeed;
-		if (rotatingBlend >= 1f) {
-			this.rotationStarted = false;
-			this.rotatingBlend = 0f;
-		}
-		Vector3 eulerRotation = this.transform.rotation.eulerAngles;
-		eulerRotation.z = this.initialAngle - (SpartanMath.TAU * Mathf.Rad2Deg * this.rotatingBlend); //Unit circle is 1 Tau Radians
-		this.transform.rotation = Quaternion.Euler(eulerRotation);
 	}
 
 	private void HandleSweepAttackControl() {
 		if (!this.heldAttackTimer.Started || this.rotationStarted) return;
-		float percentageAmount = Mathf.Clamp01(this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold);
+		float minimumRequiredRadius = this.minimumRadius / this.maximumRadius;
+		float percentageAmount = Mathf.Clamp01(minimumRequiredRadius + (this.heldAttackTimer.CurrentTimeSeconds / this.releaseThreshold));
 		this.currentAttackRadius = this.maximumRadius * percentageAmount;
 		if (this.heldAttackTimer.CurrentTimeSeconds >= this.releaseThreshold) {
 			this.SweepAttack(this.currentAttackRadius);
 		}
 	}
 
-	private void PrepareRotationFx() {
+	private void RotationVfx(float radius) {
 		//Spawn in the rotating prefab anim
 		this.rotationStarted = true;
-		this.initialAngle = this.transform.rotation.eulerAngles.z;
-		TimedObject.InstantiateTimed(this.rotationSweepPrefab, 1f, this.transform);
+		this.animatorController.SetTrigger("Spin");
+		TimedObject instance = TimedObject.InstantiateTimed(this.rotationSweepPrefab, 1f, this.transform);
+		Vector3 scale = instance.transform.localScale;
+		scale.x += radius;
+		scale.y += radius;
+        instance.transform.localScale = scale;
+	}
+
+	private void OnRotationFinished()
+	{
+		this.rotationStarted = false;
 	}
 
 	private void SweepAttack(float radius) {
@@ -79,7 +80,7 @@ public class PlayerCombat : MonoBehaviour {
 		//Sphere override collider
 		this.StopHolding();
 		//Trigger rotate the sword around
-		this.PrepareRotationFx();
+		this.RotationVfx(radius);
 
 		RaycastHit2D[] enemiesToHit = Physics2D.CircleCastAll(this.transform.position, radius, Vector2.zero, 0f, bombAffectedLayer);
 		Debug.Log($"Enemies found: {enemiesToHit.Length}");
@@ -122,9 +123,11 @@ public class PlayerCombat : MonoBehaviour {
 	}
 
 	private void OnDrawGizmos() {
-		if (this.currentAttackRadius <= 0f) return;
+        Gizmos.color = this.attackRadiusColor * 0.5f;
+        Gizmos.DrawWireSphere(this.transform.position, this.minimumRadius);
+        if (this.currentAttackRadius <= 0f) return;
 		Gizmos.color = this.attackRadiusColor;
 		Gizmos.DrawWireSphere(this.transform.position, this.currentAttackRadius);
-	}
+    }
 
 }
