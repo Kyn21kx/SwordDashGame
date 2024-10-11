@@ -19,6 +19,9 @@ public class DashMovement : MonoBehaviour
     [SerializeField]
     private Animator burstAnimation;
 
+    [SerializeField]
+    private Transform spawnPivot;
+
     private Vector2 currMouseDirection;
     private Vector2 startingPosition;
 
@@ -75,7 +78,7 @@ public class DashMovement : MonoBehaviour
     }
 
     //Probably gonna refactor this into a different class
-    public void BeginDash(Vector2 targetDirection, float travelAmount)
+    public void BeginDash(Vector2 targetDirection, float travelAmount, Animator dashPropulsionAnimation, Vector2? normal = null)
     {
         this.rig.drag = 0f;
         this.IsAiming = false;
@@ -86,8 +89,26 @@ public class DashMovement : MonoBehaviour
         this.dashingDirection = targetDirection;
         //Instantiate the burst animation and rotate it towards the target direction
         Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, targetDirection);
-        Instantiate(this.burstAnimation.gameObject, this.startingPosition, targetRotation);
         this.transform.rotation = targetRotation;
+        
+        if (normal != null) {
+			//Child rot = 90
+			// Calculate the rotation that aligns with both the surface and the target direction
+			Vector2 right = Vector2.Perpendicular(normal.Value); // Get the vector along the surface
+
+			// Create a rotation matrix from the right and up vectors
+			float angle = Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg;
+			Quaternion finalRotation = Quaternion.Euler(0, 0, angle);
+
+			// Apply the rotation
+			Animator instance = TimedObject.InstantiateTimed(dashPropulsionAnimation, 1f, this.startingPosition + normal.Value.normalized, finalRotation);
+        }
+        else {
+            Animator instance = TimedObject.InstantiateTimed(dashPropulsionAnimation, 1f, this.transform);
+            instance.transform.parent = null;
+            instance.transform.rotation = targetRotation;
+        }
+
         this.dashingTimer.Reset();
         this.floatAnimatorController.StopAnimation();
     }
@@ -139,7 +160,7 @@ public class DashMovement : MonoBehaviour
         if (this.IsAiming && Input.GetMouseButtonUp(LEFT_MOUSE_BUTTON_INDEX))
         {
             //Launch the sword towards the direction
-            this.BeginDash(this.currMouseDirection, this.maxDashDistance);
+            this.BeginDash(this.currMouseDirection, this.maxDashDistance, this.burstAnimation);
         }
     }
 

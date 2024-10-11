@@ -1,8 +1,6 @@
 using Auxiliars;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour, IDamageable {
 
@@ -23,33 +21,59 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
     private DashMovement dashReference;
     private FloatingAnimator floatingAnimatorReference;
     private SpartanTimer spriteBackToNormalTimer;
+    private PlayerCombat combatReference;
+
+
+    [SerializeField]
+    private bool isImmune;
+
+    public bool DidParry { get; private set; }
+
 
     private void Start ()
     {
+        this.isImmune = false;
+        this.DidParry = false;
         rig = GetComponent<Rigidbody2D>();
         this.dashReference = GetComponent<DashMovement>();
+        this.combatReference = GetComponent<PlayerCombat>();
         this.floatingAnimatorReference = GetComponentInChildren<FloatingAnimator>();
         this.spriteBackToNormalTimer = new SpartanTimer(TimeMode.Framed);
-    }
+	}
 
     private void Update ()
     {
         if (!this.spriteBackToNormalTimer.Started) return;
-
+        this.isImmune = true;
         float currTime = this.spriteBackToNormalTimer.CurrentTimeMS;
+        
+        //Flash the sprite back and forth
+        Color currColor = this.spriteRenderer.color;
+        if (currColor.a != 1f) {
+            currColor.a = 1f;
+        }
+        else {
+            currColor.a = 0.5f;
+        }
+
+        this.spriteRenderer.color = currColor;
+
         if (currTime >= RESTORE_COLOR_TIME_MS)
         {
-            this.RecoverFromHit();
+			this.RecoverFromHit();
         }
     }
 
     public void Damage(int value, Vector2 damageSourcePosition)
     {
+        if (this.isImmune) return;
         //We want to call the event right after we've been hit, but before we are damaged to be able to parry
-        bool didParry = this.OnDamageParryCheckCallback(value, damageSourcePosition);
-        if (didParry)
+        this.DidParry = this.OnDamageParryCheckCallback(value, damageSourcePosition);
+        if (this.DidParry)
         {
-            Debug.Log("Parry!");
+            this.isImmune = true;
+            const float arbitrarySeconds = 0.5f;
+            StartCoroutine(this.DisableImmunityAfter(arbitrarySeconds));
             return;
         }
 
@@ -66,7 +90,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 
     private void RecoverFromHit()
     {
-        this.spriteBackToNormalTimer.Stop();
+		this.isImmune = false;
+		this.spriteBackToNormalTimer.Stop();
         spriteRenderer.color = Color.white;
         this.dashReference.StopDash();
     }
@@ -89,7 +114,38 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
         this.spriteBackToNormalTimer.Reset();
     }
 
+    private IEnumerator DisableImmunityAfter(float seconds) {
+        yield return new WaitForSeconds(seconds);
+		this.isImmune = false;
+        this.DidParry = false;
+    }
+
 	public void KnockbackForSeconds(Vector2 force, float seconds) {
 		throw new System.NotImplementedException();
+	}
+
+	public void Damage(int value, GameObject damageSource) {
+		if (this.isImmune) return;
+		//We want to call the event right after we've been hit, but before we are damaged to be able to parry
+		this.DidParry = this.OnDamageParryCheckCallback(value, damageSource.transform.position);
+		if (this.DidParry) {
+			this.isImmune = true;
+			const float arbitrarySeconds = 0.5f;
+            IDamageable damageable = damageSource.GetComponent<IDamageable>();
+            if (damageable != null) {
+                damageable.Damage(this.combatReference.AttackDamage, this.transform.position);
+            }
+			StartCoroutine(this.DisableImmunityAfter(arbitrarySeconds));
+			return;
+		}
+
+		this.health -= value;
+
+		if (this.health <= 0) {
+			this.Die();
+			return;
+		}
+		//Go back a bit and flash red
+		this.OnDamaged(value, damageSource.transform.position);
 	}
 }

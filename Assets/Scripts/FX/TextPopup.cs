@@ -44,7 +44,6 @@ public class TextPopup : MonoBehaviour, IPhysicsAnimation
     {
         //Add a force to the rig in a diagonal direction = (rand +/-, 1f)
         var direction = new Vector2(SpartanMath.RandSign(), 1f).normalized;
-        Debug.Log($"Current direction: {direction}");
         float speed = Random.Range(MIN_SPEED, MAX_SPEED);
         this.rig.AddForce(direction * speed, ForceMode2D.Impulse);
     }

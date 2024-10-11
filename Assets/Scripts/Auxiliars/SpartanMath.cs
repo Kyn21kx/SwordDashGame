@@ -8,6 +8,8 @@ namespace Auxiliars {
 
 		public const float TAU = 6.2831855f;
 
+		public const float DEG_IN_CIRCLE = 360f;
+
 		public static void Clamp(ref float n, float min, float max) {
 			n = n > max ? max : n;
 			n = n < min ? min : n;
@@ -187,6 +189,21 @@ namespace Auxiliars {
 
 		public static float RandSign() {
 			return Mathf.Sign(UnityEngine.Random.Range(-1, 0));
+		}
+
+		public static Vector2 Perpendicular(Vector2 inDirection) {
+			return new Vector2(0f - inDirection.y, inDirection.x);
+		}
+
+		public static Vector2 VectorAlongSurface(Vector2 inDirection) {
+			return Perpendicular(inDirection);
+		}
+
+		// Normalize an angle between 0 and 360 degrees
+		private static float NormalizeAngle(float angle) {
+			angle %= DEG_IN_CIRCLE;
+			if (angle < 0) angle += DEG_IN_CIRCLE;
+			return angle;
 		}
 
 	}

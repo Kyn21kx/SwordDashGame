@@ -32,15 +32,23 @@ public class PlayerCombat : MonoBehaviour {
 	[SerializeField]
 	private GameObject rotationSweepPrefab;
 
+	[SerializeField]
+	private int attackDamage;
+
 	private float currentAttackRadius;
 
 	private Rigidbody2D rig;
 
 	private Animator animatorController;
 
+	private PlayerHealth healthController;
+
+	public int AttackDamage => this.attackDamage;
+
 	private void Start() {
 		this.rig = GetComponent<Rigidbody2D>();
 		this.animatorController = GetComponent<Animator>();
+		this.healthController = GetComponent<PlayerHealth>();
 		this.rotationStarted = false;
 	}
 
@@ -63,7 +71,7 @@ public class PlayerCombat : MonoBehaviour {
 		//Spawn in the rotating prefab anim
 		this.rotationStarted = true;
 		this.animatorController.SetTrigger("Spin");
-		TimedObject instance = TimedObject.InstantiateTimed(this.rotationSweepPrefab, 1f, this.transform);
+		GameObject instance = TimedObject.InstantiateTimed(this.rotationSweepPrefab, 1f, this.transform);
 		Vector3 scale = instance.transform.localScale;
 		scale.x += radius;
 		scale.y += radius;
@@ -76,6 +84,7 @@ public class PlayerCombat : MonoBehaviour {
 	}
 
 	private void SweepAttack(float radius) {
+
 		//Get a percentage of the radius to attack in
 		//Sphere override collider
 		this.StopHolding();

@@ -7,6 +7,9 @@ class PlayerExternalStateManager : MonoBehaviour, IBounceable {
 
     private DashMovement dashMovementRef;
 
+    [SerializeField]
+    private Animator bounceAnimation;
+
     private void Start()
     {
         this.rig = GetComponent<Rigidbody2D>();
@@ -18,7 +21,7 @@ class PlayerExternalStateManager : MonoBehaviour, IBounceable {
         //The player's bounce off behaviour will be to continue the dash but in the direction of the bounce
         Vector2 direction = SpartanMath.ReflectionVector(this.dashMovementRef.DashingDirection, source).normalized;
         Debug.DrawLine(this.transform.position, (Vector2)this.transform.position + direction, Color.red);
-		this.dashMovementRef.BeginDash(direction, amount);
+        this.dashMovementRef.BeginDash(direction, amount, bounceAnimation, normal: source);
     }
 
 	public bool CanBounce() {

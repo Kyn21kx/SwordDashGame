@@ -19,6 +19,12 @@ public class WallBounce : MonoBehaviour
         var bounceable = collision.gameObject.GetComponent<IBounceable>();
         Assert.IsNotNull(bounceable, $"Bounce off target {collision.transform.name} should have an attached IBounceable component!");
         if (!bounceable.CanBounce()) return;
-        bounceable.BounceOff(collision.contacts[0].normal, BOUNCE_OFF_FORCE);
+        Vector2 normalAvg = Vector2.zero;
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            normalAvg += contact.normal;
+        }
+        normalAvg *= 1f / collision.contactCount;
+        bounceable.BounceOff(normalAvg, BOUNCE_OFF_FORCE);
     }
 }

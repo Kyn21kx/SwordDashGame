@@ -13,6 +13,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
     [SerializeField]
 	private float restoreDetectionRange;
 
+	[SerializeField]
+	private float attackRange;
+
 	private PlayerHealth playerHealthReference;
     //Implement the damageable interface through this field
     private EnemyCombat enemyCombat;
@@ -30,15 +33,17 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         this.IsPlayerDetected = false;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         //Detect the player
         this.RestorePlayerDetectionStatus();
-        if (this.enemyCombat.IsPlayerInRange(this.detectRange))
+        if (!this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.detectRange))
         {
             this.IsPlayerDetected = true;
-            this.enemyCombat.Attack();
-            this.Die();
+        }
+        else if (this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.attackRange)) {
+            //We can attack
+            this.enemyCombat.PrepareAttack();
         }
     }
 
@@ -49,26 +54,12 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 		}
 	}
 
-	private void FixedUpdate()
-    {
-        /*
-        switch (type)
-        {
-            case EnemyTypes.Normal:
-                this.enemyCombat.FollowPlayer(Time.fixedDeltaTime);
-                break;
-            case EnemyTypes.Spiked:
-                break;
-            default:
-                throw new System.NotImplementedException($"Type {type} not implemented yet!");
-        }
-        */
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(this.transform.position, detectRange);
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(this.transform.position, this.attackRange);
 	}
 
 	private void OnDrawGizmosSelected() {
@@ -88,5 +79,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 
 	public void KnockbackForSeconds(Vector2 force, float seconds) {
 		((IDamageable)enemyCombat).KnockbackForSeconds(force, seconds);
+	}
+
+	public void Damage(int value, GameObject damageSource) {
+		((IDamageable)enemyCombat).Damage(value, damageSource);
 	}
 }

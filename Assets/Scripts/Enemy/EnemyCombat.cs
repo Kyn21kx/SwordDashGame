@@ -34,20 +34,22 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         this.behaviourRef = GetComponent<EnemyBehaviour>();
     }
 
-    public void PlayAttackAnimation()
+    public void PrepareAttack()
     {
-        //Here we call the animation itself, and at the end of the last frame, have a call to Attack()
-
+        //Do the animation, then attack
+        //NYI tho, so
+        Attack();
     }
 
-    public void Attack()
+    private void Attack()
     {
         switch (this.behaviourRef.Type)
         {
             case EnemyTypes.Normal:
+                break;
             case EnemyTypes.Spiked:
                 //Increase the scale of the object and do a sphere cast or something
-                playerHealthRef.Damage(1, this.transform.position);
+                playerHealthRef.Damage(1, this.gameObject);
                 break;
             case EnemyTypes.Shooting:
                 Vector2 dir = (Vector2)EntityFetcher.Instance.Player.transform.position - this.rig.position;
@@ -60,7 +62,8 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     public bool IsPlayerInRange(float detectionRange)
     {
         //Do a distance check and see if the player is within a range
-        return SpartanMath.ArrivedAt(this.transform.position, EntityFetcher.Instance.Player.transform.position, detectionRange);
+        Collider2D playerColl = Physics2D.OverlapCircle(this.transform.position, detectionRange, EntityFetcher.PlayerLayer);
+        return playerColl != null;
     }
 
     //Follow the player, with maybe a bit of noise, slowly
@@ -76,7 +79,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     public void Shoot(Vector2 direction, float speed) {
         Assert.IsTrue(this.behaviourRef.Type == EnemyTypes.Shooting, $"Enemy {transform.name} is not a shooting type, this may cause unexpected behaviour!");
-        Projectile projInstance = Instantiate(this.projectilePrefab, this.transform.position, Quaternion.identity);
+        Projectile projInstance = TimedObject.InstantiateTimed(this.projectilePrefab, 6f, this.transform.position, Quaternion.identity);
         projInstance.Initialize(direction, speed);
     }
 
@@ -105,5 +108,9 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 	private IEnumerator ResetVelocityAfter(float seconds) {
 		yield return new WaitForSeconds(seconds);
 		this.movRef.StopWithFriction();
+	}
+
+	public void Damage(int value, GameObject damageSource) {
+        this.Damage(value, damageSource.transform.position);
 	}
 }
