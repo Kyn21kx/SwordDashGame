@@ -206,5 +206,11 @@ namespace Auxiliars {
 			return angle;
 		}
 
+		public static float ClampCircleBack(float value, float min, float max) {
+			if (value < min) return max;
+			if (value > max) return min;
+			return value;
+		}
+
 	}
 }

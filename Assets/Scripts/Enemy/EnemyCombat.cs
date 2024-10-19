@@ -12,6 +12,9 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     [SerializeField]
     private float movementSpeed; // Only applicable if the enemy is of type normal
 
+    [SerializeField]
+    private float attackCooldown;
+
     [Header("Only applicable to Enemies with type \"Shooting\"")]
     [SerializeField]
     private Projectile projectilePrefab;
@@ -25,9 +28,11 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 	private EnemyMovement movRef;
 
     private EnemyBehaviour behaviourRef;
+    private SpartanTimer attackCooldownTimer;
 
 	private void Start()
     {
+        this.attackCooldownTimer = new SpartanTimer(TimeMode.Framed);
         this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
         this.rig = GetComponent<Rigidbody2D>();
         this.movRef = GetComponent<EnemyMovement>();
@@ -43,6 +48,10 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 
     private void Attack()
     {
+        if (this.attackCooldownTimer.Started && this.attackCooldownTimer.CurrentTimeSeconds <= this.attackCooldown) {
+            return;
+        }
+
         switch (this.behaviourRef.Type)
         {
             case EnemyTypes.Normal:
@@ -78,6 +87,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     }
 
     public void Shoot(Vector2 direction, float speed) {
+        this.attackCooldownTimer.Reset();
         Assert.IsTrue(this.behaviourRef.Type == EnemyTypes.Shooting, $"Enemy {transform.name} is not a shooting type, this may cause unexpected behaviour!");
         Projectile projInstance = TimedObject.InstantiateTimed(this.projectilePrefab, 6f, this.transform.position, Quaternion.identity);
         projInstance.Initialize(direction, speed);

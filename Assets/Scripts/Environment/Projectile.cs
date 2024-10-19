@@ -29,6 +29,7 @@ public class Projectile : MonoBehaviour
 
 	public void Initialize(Vector2 direction, float speed) {
 		this.direction = direction;
+		this.transform.rotation = SpartanMath.LookTowardsDirection(this.transform.forward, -direction);
 		this.speed = speed;
 	}
 
@@ -38,6 +39,12 @@ public class Projectile : MonoBehaviour
 	}
 
 	private void DetectPlayer() {
+		Collider2D coll = Physics2D.OverlapCircle(this.rig.position, 1f, EntityFetcher.PlayerLayer);
+		if (coll == null) return;
+		IDamageable playerHealth = coll.GetComponent<IDamageable>();
+		playerHealth.Damage(1, this.rig.position);
+		Destroy(this.gameObject);
+
 	}
 
 	private void OnDrawGizmos() {

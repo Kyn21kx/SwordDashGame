@@ -2,9 +2,14 @@ using Auxiliars;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(EnemyCombat))]
 public class EnemyBehaviour : MonoBehaviour, IDamageable {
+
+    private const float SHOOTING_RANGE_BOOST = 2.5f;
+
+    public UnityEvent OnPlayerDetectedCallback { get; private set; } = new UnityEvent();
 
     [SerializeField]
     private float detectRange;
@@ -33,17 +38,61 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         this.IsPlayerDetected = false;
     }
 
-    private void FixedUpdate()
+	private void Update() {
+        if (!this.IsPlayerDetected || this.type != EnemyTypes.Shooting) return;
+        //Face the player if shooty fella
+        Vector2 inverseDir = this.transform.position - EntityFetcher.Instance.Player.transform.position;
+        Quaternion lookDirection = SpartanMath.LookTowardsDirection(this.transform.forward, inverseDir);
+
+        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, lookDirection, Time.deltaTime * 5f);
+	}
+
+	private void FixedUpdate()
     {
         //Detect the player
         this.RestorePlayerDetectionStatus();
         if (!this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.detectRange))
         {
             this.IsPlayerDetected = true;
+            this.OnPlayerDetected();
         }
+        //If we're detected and we're either a long range shooting enemy or within the attacking distance, shoot
         else if (this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.attackRange)) {
             //We can attack
             this.enemyCombat.PrepareAttack();
+        }
+    }
+
+    private void OnPlayerDetected() {
+        this.OnPlayerDetectedCallback.Invoke();
+        switch (this.type) {
+            case EnemyTypes.Normal:
+                break;
+            case EnemyTypes.Spiked:
+                break;
+            case EnemyTypes.Shooting:
+				//Increase the attack range to some arbitrary value
+				this.attackRange *= SHOOTING_RANGE_BOOST;
+				this.detectRange *= SHOOTING_RANGE_BOOST;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnDetectionRestored() {
+        switch (this.type) {
+            case EnemyTypes.Normal:
+                break;
+            case EnemyTypes.Spiked:
+                break;
+            case EnemyTypes.Shooting:
+                //Reduce it back 1.5x
+                this.attackRange /= SHOOTING_RANGE_BOOST;
+                this.detectRange /= SHOOTING_RANGE_BOOST;
+                break;
+            default:
+                break;
         }
     }
 
@@ -51,6 +100,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 		//Restore the player detection status if they're already detected and outside of the restoreDetectionRange
 		if (IsPlayerDetected && !this.enemyCombat.IsPlayerInRange(this.restoreDetectionRange)) {
             this.IsPlayerDetected = false;
+            this.OnDetectionRestored();
 		}
 	}
 
