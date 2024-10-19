@@ -13,10 +13,13 @@ public class EntityFetcher : MonoBehaviour
 
     public Camera MainCamera { get; private set; }
 
+    public CameraActions CameraActionsRef { get; private set; }
+
 
     private void Awake()
     {
         this.MainCamera = Camera.main;
+        this.CameraActionsRef = this.MainCamera.GetComponent<CameraActions>();
         this.Player = GameObject.FindGameObjectWithTag(PLAYER_TAG);
         PlayerLayer = 1 << this.Player.layer;
         Instance = this;

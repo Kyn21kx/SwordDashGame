@@ -1219,6 +1219,8 @@ GameObject:
   - component: {fileID: 963194226}
   - component: {fileID: 963194230}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194232}
+  - component: {fileID: 963194231}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1328,6 +1330,33 @@ MonoBehaviour:
   shouldRecenter: 1
   recenterTime: 0
   distance: 10
+--- !u!114 &963194231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d36970a219840bd46b2c9a71932496ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &963194232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22043c376111f70458305d5b31514230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeDuration: 0
+  shakeAmount: 0.7
+  decreaseFactor: 1
 --- !u!4 &1122684189 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5768747359852688779, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
@@ -2341,7 +2370,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2274951121469695343, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
       propertyPath: impactFrameTime
-      value: 0.1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2274951121469695343, guid: 0722a89883df0c149b5169e5c5826f9b, type: 3}
       propertyPath: parryPopupPrefab
@@ -2456,26 +2485,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 101293393, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
-      propertyPath: midSpinRevPerSecond
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 101293393, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
-      propertyPath: helixSpinRevPerSecond
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 1285478812, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1285478813, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: fc31ca326391f0c4196c4c5afe59bfb8, type: 3}
-    - target: {fileID: 8896705018331850364, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
-      propertyPath: shootingSpeed
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 8896705018331850365, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
       propertyPath: m_RootOrder
       value: 12

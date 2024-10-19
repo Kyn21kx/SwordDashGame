@@ -109,6 +109,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 			Vector2 stepBackDirection = ((Vector2)this.transform.position - damageSourcePosition).normalized;
 			this.rig.AddForce(stepBackDirection * ON_DAMAGE_KNOCK_BACK_STRENGTH, ForceMode2D.Impulse);
 		}
+        EntityFetcher.Instance.CameraActionsRef.SendCameraShake(0.1f, 0.1f);
 		this.spriteRenderer.color = Color.red;
 		//Then here, begin a timer, and once it's done, go back to normal
 		Debug.Log("Damaged!");

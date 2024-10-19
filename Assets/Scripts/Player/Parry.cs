@@ -56,7 +56,7 @@ public class Parry : MonoBehaviour
         this.parryTimer.Stop();
         if (elapsedMillis <= this.parryThresholdMillis)
         {
-            TimeController.StopTimeFor(this.impactFrameTime);
+            //EntityFetcher.Instance.CameraActionsRef.SendCameraShake(0.2f, 0.1f);
             TextPopup instance = Instantiate(this.parryPopupPrefab, this.transform.position, Quaternion.identity);
             instance.PopupText = PARRY_TEXT;
             instance.StartAnimation();
