@@ -2468,6 +2468,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1285478813, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: fc31ca326391f0c4196c4c5afe59bfb8, type: 3}
     - target: {fileID: 8896705018331850364, guid: 5407b7d767903f94ba42e141371e3277, type: 3}
       propertyPath: shootingSpeed
       value: 10
