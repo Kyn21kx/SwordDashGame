@@ -64,7 +64,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
         }
     }
 
-    public void Damage(int value, Vector2 damageSourcePosition)
+    public void Damage(int value, Vector2 damageSourcePosition, bool shouldKnockback = true)
     {
         if (this.isImmune) return;
         //We want to call the event right after we've been hit, but before we are damaged to be able to parry
@@ -85,7 +85,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
             return;
         }
         //Go back a bit and flash red
-        this.OnDamaged(value, damageSourcePosition);
+        this.OnDamaged(value, damageSourcePosition, shouldKnockback);
     }
 
     private void RecoverFromHit()
@@ -93,7 +93,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 		this.isImmune = false;
 		this.spriteBackToNormalTimer.Stop();
         spriteRenderer.color = Color.white;
-        this.dashReference.StopDash();
     }
 
     public void Die()
@@ -101,16 +100,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
         Destroy(gameObject);
     }
 
-    private void OnDamaged(int value, Vector2 damageSourcePosition)
+    private void OnDamaged(int value, Vector2 damageSourcePosition, bool shouldKnockback)
     {
-        //Stop the dash
-        this.dashReference.StopDash();
-        this.spriteRenderer.color = Color.red;
-        //Go backwards from where we received the damage
-        Vector2 stepBackDirection = ((Vector2)this.transform.position - damageSourcePosition).normalized;
-        this.rig.AddForce(stepBackDirection * ON_DAMAGE_KNOCK_BACK_STRENGTH, ForceMode2D.Impulse);
-        //Then here, begin a timer, and once it's done, go back to normal
-        Debug.Log("Damaged!");
+        if (shouldKnockback) {
+			//Stop the dash
+			this.dashReference.StopDash();
+			//Go backwards from where we received the damage
+			Vector2 stepBackDirection = ((Vector2)this.transform.position - damageSourcePosition).normalized;
+			this.rig.AddForce(stepBackDirection * ON_DAMAGE_KNOCK_BACK_STRENGTH, ForceMode2D.Impulse);
+		}
+		this.spriteRenderer.color = Color.red;
+		//Then here, begin a timer, and once it's done, go back to normal
+		Debug.Log("Damaged!");
         this.spriteBackToNormalTimer.Reset();
     }
 
@@ -124,7 +125,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 		throw new System.NotImplementedException();
 	}
 
-	public void Damage(int value, GameObject damageSource) {
+	public void Damage(int value, GameObject damageSource, bool shouldKnockback = true) {
 		if (this.isImmune) return;
 		//We want to call the event right after we've been hit, but before we are damaged to be able to parry
 		this.DidParry = this.OnDamageParryCheckCallback(value, damageSource.transform.position);
@@ -146,6 +147,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
 			return;
 		}
 		//Go back a bit and flash red
-		this.OnDamaged(value, damageSource.transform.position);
+		this.OnDamaged(value, damageSource.transform.position, shouldKnockback);
 	}
 }

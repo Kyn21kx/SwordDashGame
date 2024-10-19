@@ -117,9 +117,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 		Gizmos.DrawWireSphere(this.transform.position, this.restoreDetectionRange);
 	}
 
-	public void Damage(int value, Vector2 damageSourcePosition)
+	public void Damage(int value, Vector2 damageSourcePosition, bool shouldKnockback = true)
     {
-        ((IDamageable)enemyCombat).Damage(value, damageSourcePosition);
+        ((IDamageable)enemyCombat).Damage(value, damageSourcePosition, shouldKnockback);
     }
 
     public void Die()
@@ -131,7 +131,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 		((IDamageable)enemyCombat).KnockbackForSeconds(force, seconds);
 	}
 
-	public void Damage(int value, GameObject damageSource) {
-		((IDamageable)enemyCombat).Damage(value, damageSource);
+	public void Damage(int value, GameObject damageSource, bool shouldKnockback = true) {
+		((IDamageable)enemyCombat).Damage(value, damageSource, shouldKnockback);
 	}
 }

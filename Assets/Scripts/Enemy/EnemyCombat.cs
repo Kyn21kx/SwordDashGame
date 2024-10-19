@@ -93,7 +93,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         projInstance.Initialize(direction, speed);
     }
 
-    public void Damage(int value, Vector2 damageSourcePosition)
+    public void Damage(int value, Vector2 damageSourcePosition, bool shouldKnockback = true)
     {
         this.behaviourRef.IsPlayerDetected = true;
         this.health -= value;
@@ -120,7 +120,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
 		this.movRef.StopWithFriction();
 	}
 
-	public void Damage(int value, GameObject damageSource) {
-        this.Damage(value, damageSource.transform.position);
+	public void Damage(int value, GameObject damageSource, bool shouldKnockback = true) {
+        this.Damage(value, damageSource.transform.position, shouldKnockback);
 	}
 }

@@ -42,7 +42,7 @@ public class Projectile : MonoBehaviour
 		Collider2D coll = Physics2D.OverlapCircle(this.rig.position, 1f, EntityFetcher.PlayerLayer);
 		if (coll == null) return;
 		IDamageable playerHealth = coll.GetComponent<IDamageable>();
-		playerHealth.Damage(1, this.rig.position);
+		playerHealth.Damage(1, this.rig.position, shouldKnockback: false);
 		Destroy(this.gameObject);
 
 	}
