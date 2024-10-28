@@ -9,7 +9,9 @@ public class EntityFetcher : MonoBehaviour
     public static EntityFetcher Instance { get; private set; }
     public static int PlayerLayer { get; private set; }
 
-    public GameObject Player {  get; private set; }
+	public static int BounceLayer {  get; private set; }
+
+	public GameObject Player {  get; private set; }
 
     public Camera MainCamera { get; private set; }
 
@@ -22,6 +24,7 @@ public class EntityFetcher : MonoBehaviour
         this.CameraActionsRef = this.MainCamera.GetComponent<CameraActions>();
         this.Player = GameObject.FindGameObjectWithTag(PLAYER_TAG);
         PlayerLayer = 1 << this.Player.layer;
+        BounceLayer = 1 << LayerMask.NameToLayer("Bounceable");
         Instance = this;
     }
 }

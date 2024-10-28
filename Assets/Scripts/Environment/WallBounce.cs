@@ -8,7 +8,11 @@ public class WallBounce : MonoBehaviour
 
     private const float BOUNCE_OFF_FORCE = 10f;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+	private void Awake() {
+		
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
     {
         string otherTag = collision.transform.tag;
         if (otherTag != PLAYER_TAG && otherTag != ENEMY_TAG)
