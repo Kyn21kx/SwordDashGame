@@ -99,7 +99,8 @@ public class DashMovement : MonoBehaviour
 		this.m_collisionAimGuideSprite.SetActive(false);
 		this.m_aimGuideSprite.SetActive(true);
 		this.m_aimGuideSprite.transform.localRotation = Quaternion.identity;
-		RaycastHit2D hit = Physics2D.Raycast(this.m_rig.position, dir, maxDistance, ~EntityFetcher.PlayerLayer);
+        const float maxDistanceErrorCorrection = 1.13f;
+		RaycastHit2D hit = Physics2D.Raycast(this.m_rig.position, dir, maxDistance * maxDistanceErrorCorrection, ~EntityFetcher.PlayerLayer);
         //Render until we find a collider in the bounceable layer or the enemy layer
         //Save the position at the sword
         if (hit.transform == null) {
@@ -110,7 +111,7 @@ public class DashMovement : MonoBehaviour
 		if ((1 << hit.transform.gameObject.layer) == EntityFetcher.BounceLayer) {
 		    //Handle the collision aim guide (smaller)
             this.m_collisionAimGuideSprite.SetActive(true);
-			this.m_collisionAimGuideSprite.transform.position = hit.point - dir; //offset a bit
+			this.m_collisionAimGuideSprite.transform.position = hit.point;
 
 			Vector2 reflection = SpartanMath.ReflectionVector(dir, hit.normal).normalized;
             this.m_aimGuideSprite.transform.position = (hit.point + (reflection * maxDistance));
