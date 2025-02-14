@@ -72,11 +72,6 @@ public class DashMovement : MonoBehaviour
 
     private void Aim()
     {
-        //Mouse look input to aim
-        Camera mainCamRef = EntityFetcher.Instance.MainCamera;
-        Vector2 mouseWorldPos = mainCamRef.ScreenToWorldPoint(Input.mousePosition);
-        //Dest - Source
-        this.m_currMouseDirection = (mouseWorldPos - (Vector2)this.transform.position).normalized;
         Quaternion targetRotation = SpartanMath.LookTowardsDirection(Vector3.forward, this.m_currMouseDirection);
         this.transform.rotation = targetRotation;
         //Do a line renderer thingy
@@ -91,8 +86,18 @@ public class DashMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!this.isDashing) return;
+        if (!this.isDashing) {
+            //this.MoveTowardsMouse();
+            return;
+        }
         this.DashTowards();
+    }
+
+    private void MoveTowardsMouse() {
+        Vector2 velocity = new Vector2(this.m_rig.velocity.x * this.m_currMouseDirection.x, this.m_rig.velocity.y * this.m_currMouseDirection.y);
+        //velocity = Vector2.Lerp(this.m_rig.velocity, velocity, Time.fixedDeltaTime * 5.0f);
+        Debug.Log($"Modified vel: {velocity}");
+        this.m_rig.velocity = velocity;
     }
 
     private void RenderAimGuide(Vector2 dir, float maxDistance) {
@@ -161,9 +166,9 @@ public class DashMovement : MonoBehaviour
     public void StopDash()
     {
         this.isDashing = false;
-        this.m_rig.velocity = Vector2.zero;
+        //this.m_rig.velocity = this.m_rig.velocity / 2f;
         this.m_dashingDirection = Vector2.zero;
-        this.m_currMouseDirection = Vector2.zero;
+        //this.m_currMouseDirection = Vector2.zero;
         this.m_rig.drag = this.m_initialDrag;
         this.m_dashingTimer.Stop();
         this.floatAnimatorController.StartAnimation();
@@ -195,7 +200,12 @@ public class DashMovement : MonoBehaviour
 
     private void HandleInput()
     {
-        if (this.isDashing) return;
+		//Mouse look input to aim
+		Camera mainCamRef = EntityFetcher.Instance.MainCamera;
+		Vector2 mouseWorldPos = mainCamRef.ScreenToWorldPoint(Input.mousePosition);
+		this.m_currMouseDirection = (mouseWorldPos - (Vector2)this.transform.position).normalized;
+        Debug.Log($"Mouse direction: {this.m_currMouseDirection}");
+		if (this.isDashing) return;
         //Make the user be able to aim with just a press of the mouse, shoot in release
         if (Input.GetMouseButtonDown(LEFT_MOUSE_BUTTON_INDEX))
         {

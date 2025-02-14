@@ -9,6 +9,7 @@ public class CameraShake : MonoBehaviour {
 	public float shakeAmount = 0.7f;
 	public float decreaseFactor = 1.0f;
 
+	private bool m_shouldFollow;
 	Vector3 originalPos;
 
 	private void OnEnable() {
@@ -26,9 +27,10 @@ public class CameraShake : MonoBehaviour {
 		}
 	}
 
-	public void Shake(float duration) {
+	public void Shake(float duration, bool shouldFollow = false) {
 		shakeDuration = duration;
 		this.originalPos = transform.localPosition;
+		this.m_shouldFollow = shouldFollow;
 	}
 
 }

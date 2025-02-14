@@ -9,8 +9,8 @@ public class CameraActions : MonoBehaviour {
 		this.m_shakeController = GetComponent<CameraShake>();
 	}
 
-	public void SendCameraShake(float shakeAmount, float shakeDuration) {
+	public void SendCameraShake(float shakeAmount, float shakeDuration, bool shouldFollow = false) {
 		this.m_shakeController.shakeAmount = shakeAmount;
-		this.m_shakeController.Shake(shakeDuration);
+		this.m_shakeController.Shake(shakeDuration, shouldFollow);
 	}
 }
