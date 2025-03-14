@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 /// @brief Controls the punch mechanic of the normal enemy, will handle damage detection and rotations
@@ -12,6 +11,7 @@ class EnemyPunch : MonoBehaviour {
     private int m_damage;
     private Animator m_animator;
     private EnemyCombat m_combatRef;
+    private float m_travelBlend;
 
     private Vector2 PunchOrigin => (Vector2)this.transform.parent.position + (this.m_punchDirection * 0.5f);
 
@@ -25,6 +25,13 @@ class EnemyPunch : MonoBehaviour {
     private void FixedUpdate() {
         if (this.m_combatRef.AttackState != EAttackStates.Attacking) return;
         // Do a Lerp and disable the traveling when getting to the end
+        if (this.m_travelBlend > 1f) {
+            this.DisablePunchHitbox();
+            return;
+        }
+        Vector2.Lerp(Vector2.zero, this.m_punchDirection * this.m_punchRange, this.m_travelBlend);
+        this.m_travelBlend += Time.fixedDeltaTime;
+        
 
         // Perform the raycast if we still can
         Vector2 origin = PunchOrigin;
@@ -50,18 +57,13 @@ class EnemyPunch : MonoBehaviour {
     public void CommitPunch() {
         // this.transform.LookAt(this.m_target);
         this.m_animator.StopPlayback();
-        this.m_punchDirection = this.m_target.position - this.m_combatRef.transform.position
+        this.m_punchDirection = this.m_target.position - this.m_combatRef.transform.position;
         this.m_combatRef.AttackState = EAttackStates.Attacking;
     }
 
     public void DisablePunchHitbox() {
         this.m_combatRef.AttackState = EAttackStates.Cooldown;
         this.gameObject.SetActive(false);
-    }
-
-    private IEnumerator DisableAfter(float time) {
-        yield return new WaitForSeconds(time);
-        this.DisablePunchHitbox();
     }
     
     private void OnDrawGizmos() {
