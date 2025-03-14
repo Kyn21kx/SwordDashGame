@@ -7,6 +7,7 @@ public enum EAttackStates {
     Ready = 0,
     Preparing,
     Attacking,
+    Cooldown,
     Recovering
 }
 
@@ -38,14 +39,14 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     public int Health => health;
     private IDamageable playerHealthRef;
 	private EnemyMovement movRef;
-    private EAttackStates m_attackState;
+    public EAttackStates AttackState { get; set; }
 
     private EnemyBehaviour behaviourRef;
     private SpartanTimer m_attackCooldownTimer;
 
 	private void Start()
     {
-        this.m_attackState = EAttackStates.Ready;
+        this.AttackState = EAttackStates.Ready;
         this.behaviourRef = GetComponent<EnemyBehaviour>();
         this.rig = GetComponent<Rigidbody2D>();
         this.movRef = GetComponent<EnemyMovement>();
@@ -56,34 +57,19 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
     }
 
-    public void PrepareAttack()
-    {
-        this.m_attackState = EAttackStates.Preparing;
-        // Do the animation, then attack
-        // NYI tho, so
-        switch(this.behaviourRef.Type) {
-            case EnemyTypes.Normal:
-            // Anticipation here, then call the attack on the animation
-            break;
-            case EnemyTypes.Shooting:
-            break;
-        }
-        Attack();
-    }
-
     private void Attack()
     {
         if (this.m_attackCooldownTimer.Started && this.m_attackCooldownTimer.CurrentTimeSeconds <= this.attackCooldown) {
             return;
         }
-        this.m_attackState = EAttackStates.Attacking;        
+        this.AttackState = EAttackStates.Attacking;        
         Vector2 dirToPlayer = (Vector2)EntityFetcher.Instance.Player.transform.position - this.rig.position;
         dirToPlayer.Normalize();
         switch (this.behaviourRef.Type)
         {
             case EnemyTypes.Normal:
                 // Trigger the hitbox, this will fire the animation, so send the attack cooldown in that lambda
-                this.m_punchCollider.TriggerPunchHitbox(dirToPlayer, 1);
+                this.m_punchCollider.TriggerPunchHitbox(EntityFetcher.Instance.Player.transform, 1);
                 break;
             case EnemyTypes.Spiked:
                 //Increase the scale of the object and do a sphere cast or something
