@@ -17,7 +17,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2616149035942883072, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.539964
+      value: 7.710036
       objectReference: {fileID: 0}
     - target: {fileID: 2616149035942883072, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -61,7 +61,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2616149035942883322, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
       propertyPath: m_Name
-      value: SpikedEnemy Variant
+      value: SpikedEnemy (1)
       objectReference: {fileID: 0}
     - target: {fileID: 2616149035942883326, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
       propertyPath: type
@@ -71,6 +71,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 748269e5a67026747babb3f8a5cfdebf, type: 3}
+    - target: {fileID: 8431291068379791454, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8431291068379791454, guid: 08f24d85c1ab74f4694953431a4ae2f9, type: 3}
       propertyPath: m_SortingOrder
       value: -1

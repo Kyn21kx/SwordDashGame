@@ -3,9 +3,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public enum EAttackStates {
+    Ready = 0,
+    Preparing,
+    Attacking,
+    Recovering
+}
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyCombat : MonoBehaviour, IDamageable
 {
+    
     [SerializeField]
     private int health;
 
@@ -21,51 +29,71 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     [SerializeField]
     private float shootingSpeed;
 
+    [Header("Only applicable to Enemies with type \"Normal\"")]
+    [SerializeField]
+    private EnemyPunch m_punchCollider;
+    
     private Rigidbody2D rig;
 
     public int Health => health;
     private IDamageable playerHealthRef;
 	private EnemyMovement movRef;
+    private EAttackStates m_attackState;
 
     private EnemyBehaviour behaviourRef;
-    private SpartanTimer attackCooldownTimer;
+    private SpartanTimer m_attackCooldownTimer;
 
 	private void Start()
     {
-        this.attackCooldownTimer = new SpartanTimer(TimeMode.Framed);
-        this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
+        this.m_attackState = EAttackStates.Ready;
+        this.behaviourRef = GetComponent<EnemyBehaviour>();
         this.rig = GetComponent<Rigidbody2D>();
         this.movRef = GetComponent<EnemyMovement>();
-        this.behaviourRef = GetComponent<EnemyBehaviour>();
+        if (this.m_punchCollider != null) {
+            this.m_punchCollider.DisablePunchHitbox();
+        }
+        this.m_attackCooldownTimer = new SpartanTimer(TimeMode.Framed);
+        this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
     }
 
     public void PrepareAttack()
     {
-        //Do the animation, then attack
-        //NYI tho, so
+        this.m_attackState = EAttackStates.Preparing;
+        // Do the animation, then attack
+        // NYI tho, so
+        switch(this.behaviourRef.Type) {
+            case EnemyTypes.Normal:
+            // Anticipation here, then call the attack on the animation
+            break;
+            case EnemyTypes.Shooting:
+            break;
+        }
         Attack();
     }
 
     private void Attack()
     {
-        if (this.attackCooldownTimer.Started && this.attackCooldownTimer.CurrentTimeSeconds <= this.attackCooldown) {
+        if (this.m_attackCooldownTimer.Started && this.m_attackCooldownTimer.CurrentTimeSeconds <= this.attackCooldown) {
             return;
         }
-
+        this.m_attackState = EAttackStates.Attacking;        
+        Vector2 dirToPlayer = (Vector2)EntityFetcher.Instance.Player.transform.position - this.rig.position;
+        dirToPlayer.Normalize();
         switch (this.behaviourRef.Type)
         {
             case EnemyTypes.Normal:
+                // Trigger the hitbox, this will fire the animation, so send the attack cooldown in that lambda
+                this.m_punchCollider.TriggerPunchHitbox(dirToPlayer, 1);
                 break;
             case EnemyTypes.Spiked:
                 //Increase the scale of the object and do a sphere cast or something
                 playerHealthRef.Damage(1, this.gameObject);
                 break;
             case EnemyTypes.Shooting:
-                Vector2 dir = (Vector2)EntityFetcher.Instance.Player.transform.position - this.rig.position;
-                dir.Normalize();
-                this.Shoot(dir, this.shootingSpeed);
+                this.Shoot(dirToPlayer, this.shootingSpeed);
                 break;
         }
+        this.m_attackCooldownTimer.Reset();
     }
 
     public bool IsPlayerInRange(float detectionRange)
@@ -87,7 +115,6 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     }
 
     public void Shoot(Vector2 direction, float speed) {
-        this.attackCooldownTimer.Reset();
         Assert.IsTrue(this.behaviourRef.Type == EnemyTypes.Shooting, $"Enemy {transform.name} is not a shooting type, this may cause unexpected behaviour!");
         Projectile projInstance = TimedObject.InstantiateTimed(this.projectilePrefab, 6f, this.transform.position, Quaternion.identity);
         projInstance.Initialize(direction, speed);

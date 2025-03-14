@@ -67,6 +67,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         this.OnPlayerDetectedCallback.Invoke();
         switch (this.type) {
             case EnemyTypes.Normal:
+				Debug.Log("Player detected on normal!");
                 break;
             case EnemyTypes.Spiked:
                 break;
