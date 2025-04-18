@@ -39,7 +39,18 @@ public class EnemyCombat : MonoBehaviour, IDamageable
     public int Health => health;
     private IDamageable playerHealthRef;
 	private EnemyMovement movRef;
-    public EAttackStates AttackState { get; set; }
+    
+    public EAttackStates AttackState { get => this.m_attackState; set {
+        switch(value) {
+            case EAttackStates.Cooldown:
+                this.m_attackCooldownTimer.Reset();
+                break;
+        }
+        this.m_attackState = value;
+    }}
+    
+    [SerializeField]
+    private EAttackStates m_attackState;
 
     private EnemyBehaviour behaviourRef;
     private SpartanTimer m_attackCooldownTimer;
@@ -57,7 +68,7 @@ public class EnemyCombat : MonoBehaviour, IDamageable
         this.playerHealthRef = EntityFetcher.Instance.Player.GetComponent<PlayerHealth>();
     }
 
-    private void Attack()
+    public void Attack()
     {
         if (this.m_attackCooldownTimer.Started && this.m_attackCooldownTimer.CurrentTimeSeconds <= this.attackCooldown) {
             return;

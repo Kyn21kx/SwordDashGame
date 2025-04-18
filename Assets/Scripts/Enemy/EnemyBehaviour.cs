@@ -59,7 +59,7 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         //If we're detected and we're either a long range shooting enemy or within the attacking distance, shoot
         else if (this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.attackRange)) {
             //We can attack
-            this.enemyCombat.PrepareAttack();
+            this.enemyCombat.Attack();
         }
     }
 

@@ -9,7 +9,9 @@ class EnemyPunch : MonoBehaviour {
     private float m_punchRange;
     private IDamageable m_playerHealth;
     private int m_damage;
+    [SerializeField]
     private Animator m_animator;
+    [SerializeField]
     private EnemyCombat m_combatRef;
     private float m_travelBlend;
 
@@ -17,8 +19,6 @@ class EnemyPunch : MonoBehaviour {
 
     private void Start() {
         this.m_playerHealth = EntityFetcher.Instance.Player.GetComponent<IDamageable>();
-        this.m_combatRef = this.transform.parent.GetComponent<EnemyCombat>();
-        this.m_animator = this.GetComponent<Animator>();
         this.m_animator.StopPlayback();
     }
     
@@ -29,8 +29,8 @@ class EnemyPunch : MonoBehaviour {
             this.DisablePunchHitbox();
             return;
         }
-        Vector2.Lerp(Vector2.zero, this.m_punchDirection * this.m_punchRange, this.m_travelBlend);
-        this.m_travelBlend += Time.fixedDeltaTime;
+        this.transform.localPosition = Vector2.Lerp(Vector2.zero, this.m_punchDirection * this.m_punchRange, this.m_travelBlend);
+        this.m_travelBlend += Time.fixedDeltaTime * 10.0f;
         
 
         // Perform the raycast if we still can
@@ -49,19 +49,25 @@ class EnemyPunch : MonoBehaviour {
     
     public void TriggerPunchHitbox(Transform target, int damage) {
         this.m_target = target;
+        // TODO: Make this additive
+        this.transform.LookAt(this.m_target);
         this.gameObject.SetActive(true);
-        this.m_animator.StartPlayback();
+        this.m_animator.enabled = true;
         this.m_combatRef.AttackState = EAttackStates.Preparing;
+        this.m_punchDirection = (this.m_target.position - this.m_combatRef.transform.position).normalized;
+        this.transform.localPosition = Vector2.zero + this.m_punchDirection * 1.0f;
     }
 
     public void CommitPunch() {
-        // this.transform.LookAt(this.m_target);
-        this.m_animator.StopPlayback();
-        this.m_punchDirection = this.m_target.position - this.m_combatRef.transform.position;
+        this.transform.LookAt(this.m_target);
+        this.m_animator.enabled = false;
+        this.m_punchDirection = (this.m_target.position - this.m_combatRef.transform.position).normalized;
         this.m_combatRef.AttackState = EAttackStates.Attacking;
     }
 
     public void DisablePunchHitbox() {
+        this.m_travelBlend = 0f;
+        this.transform.localPosition = Vector2.zero;
         this.m_combatRef.AttackState = EAttackStates.Cooldown;
         this.gameObject.SetActive(false);
     }
