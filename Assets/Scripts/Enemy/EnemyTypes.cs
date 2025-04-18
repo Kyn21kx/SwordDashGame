@@ -5,5 +5,6 @@ using UnityEngine;
 public enum EnemyTypes {
     Normal = 0,
     Spiked,
-    Shooting
+    Shooting,
+    Health
 }

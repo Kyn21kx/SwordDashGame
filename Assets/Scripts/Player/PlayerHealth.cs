@@ -112,7 +112,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable {
         EntityFetcher.Instance.CameraActionsRef.SendCameraShake(0.1f, 0.05f);
 		this.spriteRenderer.color = Color.red;
 		//Then here, begin a timer, and once it's done, go back to normal
-		Debug.Log("Damaged!");
         this.spriteBackToNormalTimer.Reset();
     }
 

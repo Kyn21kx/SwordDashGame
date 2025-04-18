@@ -11,6 +11,8 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 
     public UnityEvent OnPlayerDetectedCallback { get; private set; } = new UnityEvent();
 
+	public float DetectionRange => this.detectRange;
+	
     [SerializeField]
     private float detectRange;
     [SerializeField]
@@ -39,36 +41,49 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
     }
 
 	private void Update() {
-        if (!this.IsPlayerDetected || this.type != EnemyTypes.Shooting) return;
-        //Face the player if shooty fella
-        Vector2 inverseDir = this.transform.position - EntityFetcher.Instance.Player.transform.position;
-        Quaternion lookDirection = SpartanMath.LookTowardsDirection(this.transform.forward, inverseDir);
+        //Detect the player
+        this.HandleDetection();
 
-        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, lookDirection, Time.deltaTime * 5f);
+		if (!this.IsPlayerDetected) return;
+        Vector2 playerToEnemyDir = this.transform.position - EntityFetcher.Instance.Player.transform.position;
+		
+		switch(this.Type) {
+			case EnemyTypes.Health:
+				// Pick a rand direction on an angle range
+				break;
+			case EnemyTypes.Shooting:
+		        //Face the player if shooty fella
+		        Quaternion lookDirection = SpartanMath.LookTowardsDirection(this.transform.forward, playerToEnemyDir);
+
+		        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, lookDirection, Time.deltaTime * 5f);
+				break;
+		}
+		
+        if (!this.IsPlayerDetected || this.type != EnemyTypes.Shooting) return;
 	}
 
-	private void FixedUpdate()
-    {
-        //Detect the player
-        this.RestorePlayerDetectionStatus();
+	private void HandleDetection() {
+		this.RestorePlayerDetectionStatus();
         if (!this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.detectRange))
         {
             this.IsPlayerDetected = true;
             this.OnPlayerDetected();
         }
         //If we're detected and we're either a long range shooting enemy or within the attacking distance, shoot
+        //We can attack
         else if (this.IsPlayerDetected && this.enemyCombat.IsPlayerInRange(this.attackRange)) {
-            //We can attack
             this.enemyCombat.Attack();
         }
-    }
+		
+	}
 
     private void OnPlayerDetected() {
         this.OnPlayerDetectedCallback.Invoke();
         switch (this.type) {
             case EnemyTypes.Normal:
-				Debug.Log("Player detected on normal!");
-                break;
+	            break;
+			case EnemyTypes.Health:
+				break;
             case EnemyTypes.Spiked:
                 break;
             case EnemyTypes.Shooting:

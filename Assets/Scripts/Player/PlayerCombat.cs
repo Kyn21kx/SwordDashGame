@@ -92,7 +92,6 @@ public class PlayerCombat : MonoBehaviour {
 		this.RotationVfx(radius);
 
 		RaycastHit2D[] enemiesToHit = Physics2D.CircleCastAll(this.transform.position, radius, Vector2.zero, 0f, bombAffectedLayer);
-		Debug.Log($"Enemies found: {enemiesToHit.Length}");
 		for (int i = 0; i < enemiesToHit.Length; i++)
 		{
 			Transform enemyTransform = enemiesToHit[i].transform;
@@ -109,7 +108,6 @@ public class PlayerCombat : MonoBehaviour {
 			//t = d / V
 			float time = distanceToBeOutside / this.sweepForce;
 			if (time < 0) continue;
-			Debug.Log($"Time to stop pushback: {time}");
 			enemyDmg.KnockbackForSeconds(direction * this.sweepForce, time);
 		}
 	}

@@ -199,6 +199,20 @@ namespace Auxiliars {
 			return Perpendicular(inDirection);
 		}
 
+		public static Vector2 RotateVector(in Vector2 v, float degrees)
+		{
+		    float radians = degrees * Mathf.Deg2Rad;
+		    float sin = Mathf.Sin(radians);
+		    float cos = Mathf.Cos(radians);
+    
+		    float tx = v.x;
+		    float ty = v.y;
+
+		    return new Vector2(
+		        cos * tx - sin * ty,
+		        sin * tx + cos * ty
+		    );
+		}
 		// Normalize an angle between 0 and 360 degrees
 		private static float NormalizeAngle(float angle) {
 			angle %= DEG_IN_CIRCLE;

@@ -96,7 +96,6 @@ public class DashMovement : MonoBehaviour
     private void MoveTowardsMouse() {
         Vector2 velocity = new Vector2(this.m_rig.velocity.x * this.m_currMouseDirection.x, this.m_rig.velocity.y * this.m_currMouseDirection.y);
         //velocity = Vector2.Lerp(this.m_rig.velocity, velocity, Time.fixedDeltaTime * 5.0f);
-        Debug.Log($"Modified vel: {velocity}");
         this.m_rig.velocity = velocity;
     }
 
@@ -204,7 +203,6 @@ public class DashMovement : MonoBehaviour
 		Camera mainCamRef = EntityFetcher.Instance.MainCamera;
 		Vector2 mouseWorldPos = mainCamRef.ScreenToWorldPoint(Input.mousePosition);
 		this.m_currMouseDirection = (mouseWorldPos - (Vector2)this.transform.position).normalized;
-        Debug.Log($"Mouse direction: {this.m_currMouseDirection}");
 		if (this.isDashing) return;
         //Make the user be able to aim with just a press of the mouse, shoot in release
         if (Input.GetMouseButtonDown(LEFT_MOUSE_BUTTON_INDEX))
