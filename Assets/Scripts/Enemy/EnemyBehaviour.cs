@@ -1,6 +1,4 @@
 using Auxiliars;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,6 +10,8 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
     public UnityEvent OnPlayerDetectedCallback { get; private set; } = new UnityEvent();
 
 	public float DetectionRange => this.detectRange;
+	public float AttackRange => this.attackRange;
+	public float EscapeRange => this.m_escapeRange;
 	
     [SerializeField]
     private float detectRange;
@@ -23,9 +23,13 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
 	[SerializeField]
 	private float attackRange;
 
+	[SerializeField]
+	private float m_escapeRange;
+
 	private PlayerHealth playerHealthReference;
     //Implement the damageable interface through this field
     private EnemyCombat enemyCombat;
+    public EnemyCombat EnemyCombat => this.enemyCombat;
 
     public int Health => enemyCombat.Health;
 
@@ -88,7 +92,6 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
                 break;
             case EnemyTypes.Shooting:
 				//Increase the attack range to some arbitrary value
-				this.attackRange *= SHOOTING_RANGE_BOOST;
 				this.detectRange *= SHOOTING_RANGE_BOOST;
                 break;
             default:
@@ -126,6 +129,9 @@ public class EnemyBehaviour : MonoBehaviour, IDamageable {
         Gizmos.DrawWireSphere(this.transform.position, detectRange);
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireSphere(this.transform.position, this.attackRange);
+		Gizmos.color = Color.blue;
+		Gizmos.DrawWireSphere(this.transform.position, this.m_escapeRange);
+		
 	}
 
 	private void OnDrawGizmosSelected() {

@@ -146,7 +146,8 @@ MonoBehaviour:
   attackCooldown: 0
   projectilePrefab: {fileID: 0}
   shootingSpeed: 0
-  m_attackHitbox: {fileID: 0}
+  m_punchCollider: {fileID: 0}
+  m_attackState: 0
 --- !u!114 &3130643075881996217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,7 +210,8 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 0
-  speed: 2
+  m_idleSpeed: 2
+  m_combatSpeed: 5
   desiredDirectionColor: {r: 0.36611605, g: 0, b: 1, a: 1}
   otherDirectionsColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &5291402752259510151

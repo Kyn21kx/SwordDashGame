@@ -45,7 +45,7 @@ public class PathTravelController : MonoBehaviour
 		}
 		Vector2 dir = (targetPos - (Vector2)this.movementRef.transform.position).normalized;
 
-        this.movementRef.MoveTo(dir, this.movementRef.Speed);
+        this.movementRef.MoveTo(dir, this.movementRef.IdleSpeed);
 
     }
 }
